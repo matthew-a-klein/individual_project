@@ -3,7 +3,7 @@
 
 ### Linux ###
 *~
-
+metals.*
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
 
@@ -244,6 +244,7 @@ publish/
 # but database connection strings (with potential passwords) will be unencrypted
 *.pubxml
 *.publishproj
+.vscode
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
 # checkin your Azure Web App publish settings, but sensitive information contained
