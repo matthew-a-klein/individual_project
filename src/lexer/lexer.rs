@@ -1,6 +1,6 @@
-use crate::reg::nullable;
-use crate::reg::Re::*;
-use crate::reg::*;
+use crate::regex::reg::nullable;
+use crate::regex::reg::Re::*;
+use crate::regex::reg::*;
 use Val::*;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Val {
@@ -53,6 +53,7 @@ fn mkeps(r: &Re) -> Val {
     match r {
         ZERO => panic!(),
         ONE => Empty,
+        OPT(_) => Empty,
         CHAR(_) => panic!(),
         ALT(l, r) => {
             if nullable(l) {

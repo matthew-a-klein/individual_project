@@ -6,6 +6,7 @@ pub enum Re {
     ZERO,
     ONE,
     CHAR(char),
+    OPT(Box<Re>),
     ALT(Box<Re>, Box<Re>),
     SEQ(Box<Re>, Box<Re>),
     STAR(Box<Re>),
@@ -17,6 +18,7 @@ pub fn nullable(r: &Re) -> bool {
         ZERO => false,
         ONE => true,
         CHAR(_) => false,
+        OPT(_) => true,
         ALT(l, r) => nullable(&*l) || nullable(&*r),
         SEQ(r1, r2) => nullable(&*r1) && nullable(&*r2),
         STAR(_) => true,
@@ -35,6 +37,7 @@ pub fn der(c: char, re: &Re) -> Re {
                 ZERO
             }
         }
+        OPT(r) => der(c, r),
         ALT(l, r) => ALT(Box::new(der(c, &*l)), Box::new(der(c, &*r))), // Wrapped with Box::new
         SEQ(r1, r2) => {
             if nullable(&*r1) {
@@ -46,6 +49,7 @@ pub fn der(c: char, re: &Re) -> Re {
                 SEQ(Box::new(der(c, &*r1)), Box::new(*r2.clone()))
             }
         }
+
         STAR(r) => SEQ(Box::new(der(c, r)), Box::new(STAR(Box::new(*r.clone())))),
         RECD(s, r) => RECD(s.to_string(), Box::new(der(c, r))),
     }
@@ -96,6 +100,9 @@ pub fn char(c: char) -> Re {
 
 pub fn concat(re1: Re, re2: Re) -> Re {
     SEQ(Box::new(re1), Box::new(re2))
+}
+pub fn opt(r: Re) -> Re {
+    OPT(Box::new(r))
 }
 
 pub fn alt(re1: Re, re2: Re) -> Re {
