@@ -1,35 +1,54 @@
 use chrono::{prelude::*, Duration};
-
-pub enum Expressions {
-    Time(Duration),
-    Date(DateTime),
+use std::fmt;
+#[derive(Clone, PartialEq)]
+pub enum Expression {
+    TimeExp(Duration),
+    DateExp(DateTime<Utc>),
+    NumberExp(i32),
     InfixExp {
-        left: Box<Expressions>,
+        left: Box<Expression>,
         op: String,
-        right: Box<Expressions>,
+        right: Box<Expression>,
     },
     PostfixExp {
-        left: Box<Expressions>,
+        left: Box<Expression>,
         op: String,
     },
     PrefixExp {
         op: String,
-        right: Box<Expressions>,
+        right: Box<Expression>,
     },
     AssignExp {
         name: String,
-        right: Box<Expressions>,
+        right: Box<Expression>,
     },
     NameExp {
         name: String,
     },
     CondititionalExp {
-        condition: Box<Expressions>,
-        if_branch: Box<Expressions>,
-        else_branch: Box<Expressions>,
+        condition: Box<Expression>,
+        if_branch: Box<Expression>,
+        else_branch: Box<Expression>,
     },
     CallExp {
-        function: Box<Expressions>,
-        args: Vec<Expressions>,
+        function: Box<Expression>,
+        args: Vec<Expression>,
     },
+    Empty,
+}
+
+impl fmt::Debug for Expression {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self {
+            Expression::TimeExp(t) => write!(f, "{:?}", t),
+            Expression::DateExp(d) => write!(f, "{:?}", d),
+            Expression::NumberExp(n) => write!(f, "{:?}", n),
+            Expression::InfixExp { left, op, right } => {
+                write!(f, "({:?}, {:?}, {:?})", left, op, right)
+            }
+            Expression::PostfixExp { left, op } => write!(f, "({:?} {:?})", left, op),
+            Expression::PrefixExp { op, right } => write!(f, "( {:?} {:?})", op, right),
+            _ => write!(f, "Not implemented"),
+        }
+    }
 }

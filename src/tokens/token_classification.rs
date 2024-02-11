@@ -3,7 +3,6 @@ use crate::{tokens::tokens::Token, tokens::tokens::Token::*};
 pub fn is_operator(t: &Token) -> bool {
     match t {
         Operator(_) => true,
-        TimeLength(_) => true,
         _ => false,
     }
 }
@@ -14,10 +13,10 @@ pub fn get_precedence(t: &Token) -> i32 {
             Operator(s) => match s.as_str() {
                 "+" => 1,
                 "-" => 1,
-                "/" => 2,
+                "/" => 3,
                 "*" => 2,
-                "//" => 3,
-                "!" => 4,
+                "//" => 4,
+                "!" => 5,
                 _ => unreachable!(),
             },
             TimeLength(_) => 4,
@@ -34,42 +33,5 @@ pub fn is_right_assoc(t: &Token) -> bool {
         }
     } else {
         unreachable!()
-    }
-}
-
-pub fn is_postfix(op: &Token) -> bool {
-    match op {
-        op if is_operator(op) => match op {
-            Operator(s) => match s.as_str() {
-                "!" => true,
-                _ => false,
-            },
-            TimeLength(_) => true,
-            _ => false,
-        },
-        _ => unreachable!(),
-    }
-}
-
-pub fn is_infix(op: &Token) -> bool {
-    match op {
-        op if is_operator(op) => match op {
-            Operator(s) => match s.as_str() {
-                "!" => false,
-                _ => true,
-            },
-
-            _ => false,
-        },
-        _ => unreachable!(),
-    }
-}
-
-pub fn is_prefix(op: &Token) -> bool {
-    match op {
-        op if is_operator(op) => match op {
-            _ => false,
-        },
-        _ => unreachable!(),
     }
 }
