@@ -9,7 +9,6 @@ pub enum ReturnType {
     Date(DateTime<Utc>),
     Time(Duration),
     Number(i32),
-    Boolean(bool),
 }
 
 pub fn eval_exp(exp: Expression) -> Result<ReturnType, ErrorKind> {

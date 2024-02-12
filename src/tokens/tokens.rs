@@ -4,6 +4,8 @@ pub enum Token {
     Operator(String),
     TimeLength(Time),
     Date(String),
+    LParen(String),
+    RParen(String),
 }
 
 #[derive(Debug, Clone, PartialEq)]

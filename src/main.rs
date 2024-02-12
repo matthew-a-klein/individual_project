@@ -8,5 +8,5 @@ mod parsers;
 mod regex;
 mod tokens;
 fn main() -> () {
-    print!("{:?}", eval_exp(parse_all(tokenise(""))))
+    println!("{:?}", eval_exp(parse_all(tokenise("(8)"))))
 }

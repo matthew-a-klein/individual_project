@@ -2,12 +2,12 @@ use crate::{
     expressions::expressions::Expression,
     parsers::{
         date_parser::parse_date, number_parser::parse_number, prefix_parser::parse_prefix_op,
-        time_parser::parse_time,
+        r_paren_parser::parse_r_paren, time_parser::parse_time,
     },
     tokens::tokens::Token,
 };
 
-use super::binop_parser::parse_binop;
+use super::{binop_parser::parse_binop, group_parser::parse_group};
 
 pub fn parse_prefix(limit: i32, tokens: Vec<Token>) -> (Expression, Vec<Token>) {
     if tokens.len() == 0 {
@@ -18,6 +18,8 @@ pub fn parse_prefix(limit: i32, tokens: Vec<Token>) -> (Expression, Vec<Token>) 
             Token::Operator(_) => parse_prefix_op(tokens, limit),
             Token::TimeLength(_) => parse_time(tokens, limit),
             Token::Date(_) => parse_date(tokens, limit),
+            Token::LParen(_) => parse_group(tokens, limit),
+            _ => panic!(),
         }
     }
 }
@@ -32,6 +34,7 @@ pub fn parse_infix(
     } else {
         match &tokens[0] {
             Token::Operator(_) => parse_binop(left, tokens, prec_limit),
+            Token::RParen(_) => parse_r_paren(left, tokens, prec_limit),
             _ => panic!(),
         }
     }

@@ -182,6 +182,13 @@ pub fn date_reg() -> Re {
         + opt(whitespace_reg())
         + number_reg())
 }
+
+pub fn l_paren_reg() -> Re {
+    char('(') | char('{')
+}
+pub fn r_paren_reg() -> Re {
+    char(')') | char('}')
+}
 pub fn prog_reg() -> Re {
     star(
         recd("h", hour_reg())
@@ -194,7 +201,9 @@ pub fn prog_reg() -> Re {
             | recd("day", day_reg())
             | recd("month", month_time_reg())
             | recd("date", date_reg())
-            | recd("year", year_time_reg()),
+            | recd("year", year_time_reg())
+            | recd("l_paren", l_paren_reg())
+            | recd("r_paren", r_paren_reg()),
     )
 }
 
@@ -211,6 +220,8 @@ pub fn map_to_tokens(s: &(String, String)) -> Option<Token> {
             ("date", s) => Some(Date(s.to_string())),
             ("n", s) => Some(Number(s.parse::<i32>().unwrap())),
             ("op", s) => Some(Operator(s.to_string())),
+            ("l_paren", s) => Some(LParen(s.to_string())),
+            ("r_paren", s) => Some(RParen(s.to_string())),
             _ => None,
         },
         _ => unreachable!(),
