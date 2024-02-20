@@ -6,6 +6,7 @@ pub enum Token {
     Date(String),
     LParen(String),
     RParen(String),
+    Var(String),
 }
 
 #[derive(Debug, Clone, PartialEq)]

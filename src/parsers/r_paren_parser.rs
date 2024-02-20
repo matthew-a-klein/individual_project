@@ -6,7 +6,7 @@ use crate::{
 pub fn parse_r_paren(
     exp: Expression,
     tokens: Vec<Token>,
-    prec_limit: i32,
+    _prec_limit: i32,
 ) -> (Expression, Vec<Token>) {
     (exp, tokens)
 }

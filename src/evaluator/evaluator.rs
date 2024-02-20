@@ -1,4 +1,4 @@
-use std::{io::ErrorKind, ops};
+use std::{collections::HashMap, io::ErrorKind, iter::Map, ops};
 
 use chrono::{prelude::*, Duration};
 
@@ -11,15 +11,36 @@ pub enum ReturnType {
     Number(i32),
 }
 
-pub fn eval_exp(exp: Expression) -> Result<ReturnType, ErrorKind> {
+pub fn eval_stmt(
+    exp: Expression,
+    env: &HashMap<String, ReturnType>,
+) -> HashMap<String, ReturnType> {
     match &exp {
+        Expression::AssignExp { name, right } => {
+            let value = eval_exp(right, env);
+            if value.is_ok() {
+                let mut new_env = env.clone();
+                new_env.insert(name.clone(), value.unwrap());
+                new_env
+            } else {
+                panic!()
+            }
+        }
+        _ => unreachable!(),
+    }
+}
+pub fn eval_exp(
+    exp: &Expression,
+    env: &HashMap<String, ReturnType>,
+) -> Result<ReturnType, ErrorKind> {
+    match exp {
         Expression::TimeExp(t) => Ok(ReturnType::Time(*t)),
         Expression::DateExp(d) => Ok(ReturnType::Date(*d)),
         Expression::NumberExp(n) => Ok(ReturnType::Number(*n)),
         Expression::InfixExp { left, op, right } => match (op).as_str() {
             "+" => {
-                let eval_left = eval_exp(*left.clone());
-                let eval_right = eval_exp(*right.clone());
+                let eval_left = eval_exp(left, env);
+                let eval_right = eval_exp(right, env);
 
                 if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
                     l + r
@@ -28,8 +49,8 @@ pub fn eval_exp(exp: Expression) -> Result<ReturnType, ErrorKind> {
                 }
             }
             "*" => {
-                let eval_left = eval_exp(*left.clone());
-                let eval_right = eval_exp(*right.clone());
+                let eval_left = eval_exp(left, env);
+                let eval_right = eval_exp(left, env);
 
                 if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
                     l * r
@@ -38,8 +59,8 @@ pub fn eval_exp(exp: Expression) -> Result<ReturnType, ErrorKind> {
                 }
             }
             "-" => {
-                let eval_left = eval_exp(*left.clone());
-                let eval_right = eval_exp(*right.clone());
+                let eval_left = eval_exp(left, env);
+                let eval_right = eval_exp(right, env);
 
                 if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
                     l - r
@@ -48,8 +69,8 @@ pub fn eval_exp(exp: Expression) -> Result<ReturnType, ErrorKind> {
                 }
             }
             "/" => {
-                let eval_left = eval_exp(*left.clone());
-                let eval_right = eval_exp(*right.clone());
+                let eval_left = eval_exp(left, env);
+                let eval_right = eval_exp(right, env);
 
                 if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
                     l / r
@@ -59,6 +80,7 @@ pub fn eval_exp(exp: Expression) -> Result<ReturnType, ErrorKind> {
             }
             _ => Err(ErrorKind::InvalidInput),
         },
+        Expression::VarExp(s) => Ok(env.get(s).unwrap().clone()),
         _ => unimplemented!(),
     }
 }

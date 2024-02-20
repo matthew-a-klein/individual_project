@@ -5,6 +5,7 @@ pub enum Expression {
     TimeExp(Duration),
     DateExp(DateTime<Utc>),
     NumberExp(i32),
+    VarExp(String),
     InfixExp {
         left: Box<Expression>,
         op: String,
@@ -43,11 +44,13 @@ impl fmt::Debug for Expression {
             Expression::TimeExp(t) => write!(f, "{:?}", t),
             Expression::DateExp(d) => write!(f, "{:?}", d),
             Expression::NumberExp(n) => write!(f, "{:?}", n),
+            Expression::VarExp(s) => write!(f, "{:?}", s),
             Expression::InfixExp { left, op, right } => {
                 write!(f, "({:?}, {:?}, {:?})", left, op, right)
             }
             Expression::PostfixExp { left, op } => write!(f, "({:?} {:?})", left, op),
             Expression::PrefixExp { op, right } => write!(f, "( {:?} {:?})", op, right),
+            Expression::AssignExp { name, right } => write!(f, "( {:?} = {:?})", name, right),
             _ => write!(f, "Not implemented"),
         }
     }

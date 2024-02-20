@@ -1,3 +1,5 @@
+use core::num;
+
 use crate::{
     lexer::lexer::lexing_simp, regex::reg::*, tokens::tokens::Time::*, tokens::tokens::Token,
     tokens::tokens::Token::*,
@@ -16,8 +18,67 @@ fn digit_reg() -> Re {
         | char('9')
 }
 
+fn letter_reg() -> Re {
+    char('a')
+        | char('A')
+        | char('b')
+        | char('B')
+        | char('c')
+        | char('C')
+        | char('d')
+        | char('D')
+        | char('e')
+        | char('E')
+        | char('f')
+        | char('F')
+        | char('g')
+        | char('G')
+        | char('h')
+        | char('H')
+        | char('i')
+        | char('I')
+        | char('j')
+        | char('J')
+        | char('k')
+        | char('K')
+        | char('l')
+        | char('L')
+        | char('m')
+        | char('M')
+        | char('n')
+        | char('N')
+        | char('o')
+        | char('O')
+        | char('p')
+        | char('P')
+        | char('q')
+        | char('Q')
+        | char('r')
+        | char('R')
+        | char('s')
+        | char('S')
+        | char('t')
+        | char('T')
+        | char('u')
+        | char('U')
+        | char('v')
+        | char('V')
+        | char('w')
+        | char('W')
+        | char('x')
+        | char('X')
+        | char('y')
+        | char('Y')
+        | char('z')
+        | char('Z')
+}
+
 fn number_reg() -> Re {
     star(digit_reg())
+}
+
+fn variable_reg() -> Re {
+    star(letter_reg()) + number_reg()
 }
 
 fn jan_reg() -> Re {
@@ -169,7 +230,7 @@ pub fn year_time_reg() -> Re {
     char('y') | char('Y') | string_to_rexp("year") | string_to_rexp("Year")
 }
 pub fn operator_reg() -> Re {
-    char('+') | char('-') | char('/') | char('*') | string_to_rexp("//") | char('!')
+    char('=') | char('+') | char('-') | char('/') | char('*') | string_to_rexp("//") | char('!')
 }
 pub fn date_reg() -> Re {
     (number_reg()
@@ -195,6 +256,7 @@ pub fn prog_reg() -> Re {
             | recd("m", minute_reg())
             | recd("s", second_reg())
             | recd("n", number_reg())
+            | recd("var", variable_reg())
             | recd("op", operator_reg())
             | recd("w", whitespace_reg())
             | recd("week", week_reg())
@@ -222,6 +284,7 @@ pub fn map_to_tokens(s: &(String, String)) -> Option<Token> {
             ("op", s) => Some(Operator(s.to_string())),
             ("l_paren", s) => Some(LParen(s.to_string())),
             ("r_paren", s) => Some(RParen(s.to_string())),
+            ("var", s) => Some(Var(s.to_string())),
             _ => None,
         },
         _ => unreachable!(),

@@ -17,10 +17,9 @@ pub fn get_precedence(t: &Token) -> i32 {
                 "*" => 2,
                 "//" => 4,
                 "!" => 5,
-                _ => unreachable!(),
+                _ => 0,
             },
-            TimeLength(_) => 4,
-            _ => unreachable!(),
+            _ => 0,
         },
         _ => unreachable!(),
     }
