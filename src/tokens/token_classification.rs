@@ -1,26 +1,12 @@
-use crate::{tokens::tokens::Token, tokens::tokens::Token::*};
-
-pub fn is_operator(t: &Token) -> bool {
-    match t {
-        Operator(_) => true,
-        _ => false,
-    }
-}
+use crate::{ tokens::tokens::Token, tokens::tokens::Token::* };
 
 pub fn get_precedence(t: &Token) -> i32 {
     match t {
-        op if is_operator(op) => match op {
-            Operator(s) => match s.as_str() {
-                "+" => 1,
-                "-" => 1,
-                "/" => 3,
-                "*" => 2,
-                "//" => 4,
-                "!" => 5,
-                _ => 0,
-            },
-            _ => 0,
-        },
+        Semi => 0,
+        Operator(s) if s.as_str() == "=" => 1,
+        Operator(s) if s.as_str() == "+" || s.as_str() == "-" => 3,
+        Operator(s) if s.as_str() == "*" || s.as_str() == "/" => 4,
+
         _ => unreachable!(),
     }
 }

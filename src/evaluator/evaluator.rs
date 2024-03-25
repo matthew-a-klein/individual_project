@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io::ErrorKind, iter::Map, ops};
+use std::{collections::HashMap, io::ErrorKind, ops};
 
 use chrono::{prelude::*, Duration};
 
@@ -11,8 +11,25 @@ pub enum ReturnType {
     Number(i32),
 }
 
+pub fn eval_prog(
+    prog: Vec<Expression>,
+    env: &HashMap<String, ReturnType> 
+) -> Result<ReturnType, ErrorKind>{
+    match &prog[0]{
+     Expression::AssignExp { name, right } => 
+     {
+        let new_env = eval_stmt(&prog[0], env);
+        eval_prog(prog[1..].to_vec(), &new_env) 
+     }
+     ,
+     _ => eval_exp(&prog[0], env)  
+    }
+}
+/*
+Evaluate code snippets that do not return a value.
+ */
 pub fn eval_stmt(
-    exp: Expression,
+    exp: &Expression,
     env: &HashMap<String, ReturnType>,
 ) -> HashMap<String, ReturnType> {
     match &exp {
@@ -29,6 +46,9 @@ pub fn eval_stmt(
         _ => unreachable!(),
     }
 }
+/*
+Evaluate code snippets that do return a value
+*/
 pub fn eval_exp(
     exp: &Expression,
     env: &HashMap<String, ReturnType>,
@@ -50,7 +70,7 @@ pub fn eval_exp(
             }
             "*" => {
                 let eval_left = eval_exp(left, env);
-                let eval_right = eval_exp(left, env);
+                let eval_right = eval_exp(right, env);
 
                 if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
                     l * r
@@ -85,6 +105,9 @@ pub fn eval_exp(
     }
 }
 
+// Define the mathematical operations for times and dates.
+
+// The "+" operator
 impl ops::Add<ReturnType> for ReturnType {
     type Output = Result<ReturnType, ErrorKind>;
 
@@ -98,7 +121,7 @@ impl ops::Add<ReturnType> for ReturnType {
         }
     }
 }
-
+// The "*" operator
 impl ops::Mul<ReturnType> for ReturnType {
     type Output = Result<ReturnType, ErrorKind>;
 
@@ -112,7 +135,7 @@ impl ops::Mul<ReturnType> for ReturnType {
         }
     }
 }
-
+// The "-" operator
 impl ops::Sub for ReturnType {
     type Output = Result<ReturnType, ErrorKind>;
 
@@ -129,6 +152,7 @@ impl ops::Sub for ReturnType {
     }
 }
 
+// The "/" operator
 impl ops::Div for ReturnType {
     type Output = Result<ReturnType, ErrorKind>;
 

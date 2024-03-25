@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
 use crate::{
-    evaluator::evaluator::eval_stmt, lexer::tokeniser::tokenise, parsers::main_parser::parse_all,
+    evaluator::evaluator::eval_prog,
+    lexer::tokeniser::tokenise,
+    parsers::main_parser::{ parse, parse_programme },
 };
 mod evaluator;
 mod expressions;
@@ -12,6 +14,9 @@ mod tokens;
 fn main() -> () {
     println!(
         "{:?}",
-        eval_stmt(parse_all(tokenise("date = 11//12//23")), &HashMap::new())
-    )
+        eval_prog(
+            parse_programme(tokenise("date = 06//11//23; date = date + 3 * h; date")),
+            &HashMap::new()
+        )
+    );
 }

@@ -1,6 +1,6 @@
 use crate::{
-    expressions::expressions::Expression::{self, *},
-    tokens::tokens::Token::{self, *},
+    expressions::expressions::Expression::{ self, * },
+    tokens::tokens::Token::{ self, * },
 };
 
 use super::main_parser::parse_infix;
