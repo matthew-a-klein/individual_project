@@ -7,6 +7,7 @@ pub enum Token {
     LParen(String),
     RParen(String),
     Var(String),
+    Semi,
 }
 
 #[derive(Debug, Clone, PartialEq)]
