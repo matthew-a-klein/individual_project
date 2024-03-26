@@ -1,4 +1,4 @@
-use chrono::{prelude::*, Duration};
+use chrono::{ prelude::*, Duration };
 use std::fmt;
 #[derive(Clone, PartialEq)]
 pub enum Expression {
@@ -26,7 +26,7 @@ pub enum Expression {
     NameExp {
         name: String,
     },
-    CondititionalExp {
+    ConditionalExp {
         condition: Box<Expression>,
         if_branch: Box<Expression>,
         else_branch: Box<Expression>,
@@ -44,13 +44,15 @@ impl fmt::Debug for Expression {
             Expression::TimeExp(t) => write!(f, "{:?}", t),
             Expression::DateExp(d) => write!(f, "{:?}", d),
             Expression::NumberExp(n) => write!(f, "{:?}", n),
-            Expression::VarExp(s) => write!(f, "{:?}", s),
+            Expression::VarExp(s) => write!(f, "{s}"),
             Expression::InfixExp { left, op, right } => {
-                write!(f, "({:?}, {:?}, {:?})", left, op, right)
+                write!(f, "({:?} {} {:?})", left, op, right)
             }
             Expression::PostfixExp { left, op } => write!(f, "({:?} {:?})", left, op),
-            Expression::PrefixExp { op, right } => write!(f, "( {:?} {:?})", op, right),
-            Expression::AssignExp { name, right } => write!(f, "( {:?} = {:?})", name, right),
+            Expression::PrefixExp { op, right } => write!(f, "({:?} {:?})", op, right),
+            Expression::AssignExp { name, right } => write!(f, "({} = {:?})", name, right),
+            Expression::ConditionalExp { condition, if_branch, else_branch } =>
+                write!(f, "if {:?} then ({:?}), else ({:?})", condition, if_branch, else_branch),
             _ => write!(f, "Not implemented"),
         }
     }

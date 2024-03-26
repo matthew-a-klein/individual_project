@@ -1,4 +1,3 @@
-
 use Re::*;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Re {
@@ -30,11 +29,7 @@ pub fn der(c: char, re: &Re) -> Re {
         ZERO => ZERO,
         ONE => ZERO,
         CHAR(d) => {
-            if c == *d {
-                ONE
-            } else {
-                ZERO
-            }
+            if c == *d { ONE } else { ZERO }
         }
         OPT(r) => der(c, r),
         ALT(l, r) => ALT(Box::new(der(c, &*l)), Box::new(der(c, &*r))), // Wrapped with Box::new
@@ -42,7 +37,7 @@ pub fn der(c: char, re: &Re) -> Re {
             if nullable(&*r1) {
                 ALT(
                     Box::new(SEQ(Box::new(der(c, &*r1)), Box::new(*r2.clone()))),
-                    Box::new(der(c, &*r2)),
+                    Box::new(der(c, &*r2))
                 )
             } else {
                 SEQ(Box::new(der(c, &*r1)), Box::new(*r2.clone()))
@@ -56,24 +51,22 @@ pub fn der(c: char, re: &Re) -> Re {
 
 fn simp(re: &Re) -> &Re {
     match re {
-        ALT(l, r) => match (simp(l), simp(r)) {
-            (ZERO, rs) => rs,
-            (ls, ZERO) => ls,
-            (ls, rs) => {
-                if rs == ls {
-                    ls
-                } else {
-                    re
+        ALT(l, r) =>
+            match (simp(l), simp(r)) {
+                (ZERO, rs) => rs,
+                (ls, ZERO) => ls,
+                (ls, rs) => {
+                    if rs == ls { ls } else { re }
                 }
             }
-        },
-        SEQ(r1, r2) => match (simp(r1), simp(r2)) {
-            (ZERO, _) => &ZERO,
-            (_, ZERO) => &ZERO,
-            (ONE, r2) => r2,
-            (r1, ONE) => r1,
-            (_, _) => re,
-        },
+        SEQ(r1, r2) =>
+            match (simp(r1), simp(r2)) {
+                (ZERO, _) => &ZERO,
+                (_, ZERO) => &ZERO,
+                (ONE, r2) => r2,
+                (r1, ONE) => r1,
+                (_, _) => re,
+            }
         re => re,
     }
 }

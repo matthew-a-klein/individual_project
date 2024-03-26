@@ -2,6 +2,7 @@ use crate::{
     expressions::expressions::Expression,
     parsers::{
         assignment_parser::parse_assignment,
+        conditional_parser::parse_conditional,
         date_parser::parse_date,
         number_parser::parse_number,
         postfix_parser::parse_postfix,
@@ -43,6 +44,8 @@ pub fn parse_infix(
         match &tokens[0] {
             Token::Semi => (left, tokens[1..].to_vec()),
             Token::Operator(s) if s == "=" => parse_assignment(left, tokens, prec_limit),
+            Token::Operator(s) if s == "?" => parse_conditional(left, tokens, prec_limit),
+            Token::Operator(s) if s == ":" => (left, tokens),
             Token::Operator(_) => parse_binop(left, tokens, prec_limit),
             Token::RParen(_) => parse_r_paren(left, tokens, prec_limit),
             _ => panic!(),

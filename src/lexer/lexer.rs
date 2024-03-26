@@ -85,10 +85,6 @@ pub fn inj(r: &Re, c: char, v: Val) -> Val {
         (SEQ(r1, r2), Right(v)) =>
             match *v {
                 v => Sequ(Box::new(mkeps(&*r1)), Box::new(inj(&*r2, c, v))),
-                _ => {
-                    println!("{:?}", *v);
-                    panic!()
-                }
             }
 
         (STAR(r), Sequ(v1, v2)) =>
@@ -175,7 +171,7 @@ fn f_recd<'a, F: 'a>(f: F) -> Box<dyn (Fn(Val) -> Val) + 'a> where F: Fn(Val) ->
 }
 
 fn f_error() -> Box<dyn Fn(Val) -> Val> {
-    Box::new(move |v| panic!())
+    Box::new(move |_v| panic!())
 }
 
 // Simplify function

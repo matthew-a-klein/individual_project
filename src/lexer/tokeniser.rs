@@ -1,5 +1,3 @@
-use core::num;
-
 use crate::{
     lexer::lexer::lexing_simp,
     regex::reg::*,
@@ -157,6 +155,7 @@ pub fn date_reg() -> Re {
 pub fn l_paren_reg() -> Re {
     char('(') | char('{')
 }
+
 pub fn r_paren_reg() -> Re {
     char(')') | char('}')
 }
@@ -181,26 +180,23 @@ pub fn prog_reg() -> Re {
 }
 
 pub fn map_to_tokens(s: &(String, String)) -> Option<Token> {
-    match s {
-        (s1, s2) =>
-            match (s1.as_str(), s2) {
-                ("h", _) => Some(TimeLength(Hour)),
-                ("s", _) => Some(TimeLength(Second)),
-                ("m", _) => Some(TimeLength(Minute)),
-                ("day", _) => Some(TimeLength(Day)),
-                ("week", _) => Some(TimeLength(Week)),
-                ("month", _) => Some(TimeLength(Month)),
-                ("year", _) => Some(TimeLength(Year)),
-                ("date", s) => Some(Date(s.to_string())),
-                ("n", s) => Some(Number(s.parse::<i32>().unwrap())),
-                ("op", s) => Some(Operator(s.to_string())),
-                ("l_paren", s) => Some(LParen(s.to_string())),
-                ("r_paren", s) => Some(RParen(s.to_string())),
-                ("var", s) => Some(Var(s.to_string())),
-                ("semi", _) => Some(Semi),
-                _ => None,
-            }
-        _ => unreachable!(),
+    let (s1, s2) = s;
+    match (s1.as_str(), s2) {
+        ("h", _) => Some(TimeLength(Hour)),
+        ("s", _) => Some(TimeLength(Second)),
+        ("m", _) => Some(TimeLength(Minute)),
+        ("day", _) => Some(TimeLength(Day)),
+        ("week", _) => Some(TimeLength(Week)),
+        ("month", _) => Some(TimeLength(Month)),
+        ("year", _) => Some(TimeLength(Year)),
+        ("date", s) => Some(Date(s.to_string())),
+        ("n", s) => Some(Number(s.parse::<i32>().unwrap())),
+        ("op", s) => Some(Operator(s.to_string())),
+        ("l_paren", s) => Some(LParen(s.to_string())),
+        ("r_paren", s) => Some(RParen(s.to_string())),
+        ("var", s) => Some(Var(s.to_string())),
+        ("semi", _) => Some(Semi),
+        _ => None,
     }
 }
 

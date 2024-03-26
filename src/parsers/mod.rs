@@ -9,3 +9,5 @@ pub mod prefix_parser;
 pub mod r_paren_parser;
 pub mod time_parser;
 pub mod var_parser;
+pub mod conditional_parser;
+mod tests;

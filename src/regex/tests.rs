@@ -1,3 +1,4 @@
+#[cfg(test)]
 use crate::regex::reg::{ char, matcher, opt, star };
 #[test]
 fn test_matcher() {

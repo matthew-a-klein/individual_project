@@ -1,3 +1,4 @@
+#[cfg(test)]
 use crate::{ lexer::lexer::lexing_simp, regex::reg::{ char, recd, star } };
 
 #[test]
