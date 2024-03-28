@@ -1,7 +1,7 @@
 pub mod assignment_parser;
 pub mod binop_parser;
 pub mod date_parser;
-pub mod group_parser;
+pub mod paren_parser;
 pub mod main_parser;
 pub mod number_parser;
 pub mod postfix_parser;

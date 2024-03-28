@@ -1,11 +1,8 @@
-use crate::{
-    expressions::expressions::Expression::{self},
-    tokens::tokens::Token::{self, *},
-};
+use crate::{ expressions::expressions::Expression::{ self }, tokens::tokens::Token::{ self, * } };
 
-use super::main_parser::{parse_infix, parse_prefix};
+use super::main_parser::{ parse_infix, parse_prefix };
 
-pub fn parse_group(tokens: Vec<Token>, prec_limit: i32) -> (Expression, Vec<Token>) {
+pub fn parse_paren(tokens: Vec<Token>, prec_limit: i32) -> (Expression, Vec<Token>) {
     println!("{:?}", tokens);
 
     if let LParen(_) = &tokens[0] {

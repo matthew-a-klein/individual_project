@@ -17,14 +17,10 @@ fn main() -> () {
         "{:?}",
         evaluate(
             parse_programme(
-                tokenise(
-                    "
-            low = 1; 
-            high = 1;
-            truth = low == high ? 1 : 0 + 2;
-            truth
-            "
-                )
+                tokenise("
+            number = 2* ((3 + 1)* (2- 1));
+            number
+            ")
             )
         )
     );

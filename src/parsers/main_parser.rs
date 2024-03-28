@@ -13,7 +13,7 @@ use crate::{
     tokens::{ token_classification::get_precedence, tokens::Token },
 };
 
-use super::{ binop_parser::parse_binop, group_parser::parse_group, var_parser::parse_var };
+use super::{ binop_parser::parse_binop, paren_parser::parse_paren, var_parser::parse_var };
 
 pub fn parse_prefix(limit: i32, tokens: Vec<Token>) -> (Expression, Vec<Token>) {
     println!("Parsing Prefix: {:?} with limit {:?}", tokens, limit);
@@ -25,7 +25,7 @@ pub fn parse_prefix(limit: i32, tokens: Vec<Token>) -> (Expression, Vec<Token>) 
             Token::Operator(_) => parse_prefix_op(tokens, limit),
             Token::TimeLength(_) => parse_time(tokens, limit),
             Token::Date(_) => parse_date(tokens, limit),
-            Token::LParen(_) => parse_group(tokens, limit),
+            Token::LParen(_) => parse_paren(tokens, limit),
             Token::Var(_) => parse_var(tokens, limit),
             _ => panic!(),
         }
