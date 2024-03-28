@@ -134,6 +134,7 @@ pub fn operator_reg() -> Re {
         char(':') |
         char('<') |
         char('<') |
+        char(',') |
         string_to_rexp("==")
 }
 
