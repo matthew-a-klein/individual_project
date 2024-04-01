@@ -78,6 +78,12 @@ fn number_reg() -> Re {
     star(digit_reg())
 }
 
+fn comment_reg() -> Re {
+    string_to_rexp("/*") +
+        star(letter_reg() | number_reg() | whitespace_reg() | operator_reg()) +
+        string_to_rexp("*/")
+}
+
 fn variable_reg() -> Re {
     star(letter_reg()) + number_reg()
 }
@@ -176,7 +182,8 @@ pub fn prog_reg() -> Re {
             recd("year", year_time_reg()) |
             recd("l_paren", l_paren_reg()) |
             recd("r_paren", r_paren_reg()) |
-            recd("semi", semi_reg())
+            recd("semi", semi_reg()) |
+            recd("comment", comment_reg())
     )
 }
 

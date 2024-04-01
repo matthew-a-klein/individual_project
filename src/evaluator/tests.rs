@@ -40,9 +40,10 @@ fn test_evaluator() {
         parse_programme(
             tokenise(
                 "
+    /* JTest the fibonacci numbers*/
     fib(number) = number == 1 ? 1 : 
     number == 0 ? 0 :
-     fib(number - 1) + fib(number  -2 );
+    fib(number - 1) + fib(number - 2);
     result = fib(10);
     result
     "
