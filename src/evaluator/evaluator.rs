@@ -31,19 +31,25 @@ fn eval_prog(
 /*
 Evaluate code snippets that do not return a value.
  */
-fn eval_stmt(exp: &Expression, env: &HashMap<String, ReturnType>) -> HashMap<String, ReturnType> {
+fn eval_stmt(exp: &Expression, vars: &HashMap<String, ReturnType>) -> HashMap<String, ReturnType> {
     match &exp {
-        Expression::AssignExp { name, right } => {
-            let value = eval_exp(right, env);
+        Expression::AssignExp { left, right } => {
+            let value = eval_exp(right, vars);
             if value.is_ok() {
-                let mut new_env = env.clone();
-                new_env.insert(name.clone(), value.unwrap());
-                new_env
+                let mut new_env = vars.clone();
+
+                match *left.clone() {
+                    Expression::VarExp(name) => {
+                        new_env.insert(name, value.unwrap());
+                        new_env
+                    }
+                    _ => unimplemented!(),
+                }
             } else {
                 panic!()
             }
         }
-        _ => unreachable!(),
+        _ => unimplemented!(),
     }
 }
 /*

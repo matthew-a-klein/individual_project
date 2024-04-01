@@ -1,5 +1,5 @@
 use chrono::{ prelude::*, Duration };
-use std::fmt;
+use std::fmt::{ self, write };
 #[derive(Clone, PartialEq)]
 pub enum Expression {
     TimeExp(Duration),
@@ -20,11 +20,8 @@ pub enum Expression {
         right: Box<Expression>,
     },
     AssignExp {
-        name: String,
+        left: Box<Expression>,
         right: Box<Expression>,
-    },
-    NameExp {
-        name: String,
     },
     ConditionalExp {
         condition: Box<Expression>,
@@ -32,7 +29,7 @@ pub enum Expression {
         else_branch: Box<Expression>,
     },
     CallExp {
-        function: Box<Expression>,
+        name: String,
         args: Vec<Expression>,
     },
     Empty,
@@ -50,9 +47,10 @@ impl fmt::Debug for Expression {
             }
             Expression::PostfixExp { left, op } => write!(f, "({:?} {:?})", left, op),
             Expression::PrefixExp { op, right } => write!(f, "({:?} {:?})", op, right),
-            Expression::AssignExp { name, right } => write!(f, "({} = {:?})", name, right),
+            Expression::AssignExp { left, right } => write!(f, "({:?} = {:?})", left, right),
             Expression::ConditionalExp { condition, if_branch, else_branch } =>
-                write!(f, "if {:?} then ({:?}), else ({:?})", condition, if_branch, else_branch),
+                write!(f, "if {:?} then ({:?}) else ({:?})", condition, if_branch, else_branch),
+            Expression::CallExp { name, args } => { write!(f, "{}({:?})", name, args) }
             _ => write!(f, "Not implemented"),
         }
     }

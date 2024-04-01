@@ -4,6 +4,7 @@ use crate::{
         assignment_parser::parse_assignment,
         conditional_parser::parse_conditional,
         date_parser::parse_date,
+        group_parser::parse_group,
         number_parser::parse_number,
         postfix_parser::parse_postfix,
         prefix_parser::parse_prefix_op,
@@ -47,6 +48,7 @@ pub fn parse_infix(
             Token::Operator(s) if s == "?" => parse_conditional(left, tokens, prec_limit),
             Token::Operator(s) if s == ":" => (left, tokens),
             Token::Operator(_) => parse_binop(left, tokens, prec_limit),
+            Token::LParen(_) => parse_group(left, tokens, prec_limit),
             Token::RParen(_) => parse_r_paren(left, tokens, prec_limit),
             _ => panic!(),
         }

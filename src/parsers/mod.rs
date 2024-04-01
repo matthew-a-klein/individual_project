@@ -10,4 +10,5 @@ pub mod r_paren_parser;
 pub mod time_parser;
 pub mod var_parser;
 pub mod conditional_parser;
+pub mod group_parser;
 mod tests;
