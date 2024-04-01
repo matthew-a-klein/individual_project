@@ -13,124 +13,114 @@ pub enum ReturnType {
 }
 
 pub fn evaluate(prog: Vec<Expression>) -> Result<ReturnType, ErrorKind> {
-    eval_prog(prog, &HashMap::new())
+    let result = eval_prog(prog, &HashMap::new(), &HashMap::new())?;
+    Ok(result)
 }
 
 fn eval_prog(
     prog: Vec<Expression>,
-    env: &HashMap<String, ReturnType>
+    env: &HashMap<String, ReturnType>,
+    funs: &HashMap<String, (Vec<Expression>, Box<Expression>)>
 ) -> Result<ReturnType, ErrorKind> {
     match &prog[0] {
         Expression::AssignExp { .. } => {
-            let new_env = eval_stmt(&prog[0], env);
-            eval_prog(prog[1..].to_vec(), &new_env)
+            let (new_vars, new_funs) = eval_stmt(&prog[0], env, funs);
+            eval_prog(prog[1..].to_vec(), &new_vars, &new_funs)
         }
-        _ => eval_exp(&prog[0], env),
+        _ => eval_exp(&prog[0], env, funs),
     }
 }
 /*
 Evaluate code snippets that do not return a value.
  */
-fn eval_stmt(exp: &Expression, vars: &HashMap<String, ReturnType>) -> HashMap<String, ReturnType> {
+pub fn eval_stmt(
+    exp: &Expression,
+    vars: &HashMap<String, ReturnType>,
+    funs: &HashMap<String, (Vec<Expression>, Box<Expression>)>
+) -> (HashMap<String, ReturnType>, HashMap<String, (Vec<Expression>, Box<Expression>)>) {
     match &exp {
         Expression::AssignExp { left, right } => {
-            let value = eval_exp(right, vars);
-            if value.is_ok() {
-                let mut new_env = vars.clone();
-
-                match *left.clone() {
-                    Expression::VarExp(name) => {
-                        new_env.insert(name, value.unwrap());
-                        new_env
+            match *left.clone() {
+                Expression::VarExp(name) => {
+                    let value = eval_exp(right, vars, funs);
+                    if value.is_ok() {
+                        let mut new_vars = vars.clone();
+                        new_vars.insert(name, value.unwrap());
+                        (new_vars, funs.clone())
+                    } else {
+                        panic!()
                     }
-                    _ => unimplemented!(),
                 }
-            } else {
-                panic!()
+                Expression::CallExp { name, args } => {
+                    let mut new_funs = funs.clone();
+                    new_funs.insert(name, (args, right.clone()));
+                    (vars.clone(), new_funs)
+                }
+                _ => unimplemented!(),
             }
         }
         _ => unimplemented!(),
     }
 }
+
 /*
 Evaluate code snippets that do return a value
 */
-fn eval_exp(exp: &Expression, env: &HashMap<String, ReturnType>) -> Result<ReturnType, ErrorKind> {
+fn eval_exp(
+    exp: &Expression,
+    vars: &HashMap<String, ReturnType>,
+    funs: &HashMap<String, (Vec<Expression>, Box<Expression>)>
+) -> Result<ReturnType, ErrorKind> {
     match exp {
         Expression::TimeExp(t) => Ok(ReturnType::Time(*t)),
         Expression::DateExp(d) => Ok(ReturnType::Date(*d)),
         Expression::NumberExp(n) => Ok(ReturnType::Number(*n)),
-        Expression::InfixExp { left, op, right } =>
+        Expression::InfixExp { left, op, right } => {
+            let left = eval_exp(left, vars, funs)?;
+            let right = eval_exp(right, vars, funs)?;
             match op.as_str() {
-                "+" => {
-                    let eval_left = eval_exp(left, env);
-                    let eval_right = eval_exp(right, env);
+                "+" => { left + right }
+                "*" => { left * right }
+                "-" => { left - right }
+                "/" => { left / right }
 
-                    if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
-                        l + r
-                    } else {
-                        Err(ErrorKind::InvalidInput)
-                    }
-                }
-                "*" => {
-                    let eval_left = eval_exp(left, env);
-                    let eval_right = eval_exp(right, env);
-
-                    if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
-                        l * r
-                    } else {
-                        Err(ErrorKind::InvalidInput)
-                    }
-                }
-                "-" => {
-                    let eval_left = eval_exp(left, env);
-                    let eval_right = eval_exp(right, env);
-
-                    if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
-                        l - r
-                    } else {
-                        Err(ErrorKind::InvalidInput)
-                    }
-                }
-                "/" => {
-                    let eval_left = eval_exp(left, env);
-                    let eval_right = eval_exp(right, env);
-
-                    if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
-                        l / r
-                    } else {
-                        Err(ErrorKind::InvalidInput)
-                    }
-                }
-
-                "==" => {
-                    let eval_left = eval_exp(left, env);
-                    let eval_right = eval_exp(right, env);
-
-                    if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
-                        Ok(ReturnType::Boolean(l == r))
-                    } else {
-                        Err(ErrorKind::InvalidInput)
-                    }
-                }
-                "<" => {
-                    let eval_left = eval_exp(left, env);
-                    let eval_right = eval_exp(right, env);
-
-                    if let (Ok(l), Ok(r)) = (eval_left, eval_right) {
-                        Ok(ReturnType::Boolean(l < r))
-                    } else {
-                        Err(ErrorKind::InvalidInput)
-                    }
-                }
+                "==" => { Ok(ReturnType::Boolean(left == right)) }
+                "<" => { Ok(ReturnType::Boolean(left < right)) }
                 _ => Err(ErrorKind::InvalidInput),
             }
-        Expression::VarExp(s) => Ok(env.get(s).unwrap().clone()),
+        }
+        Expression::VarExp(s) => Ok(vars.get(s).unwrap().clone()),
 
         Expression::ConditionalExp { condition, if_branch, else_branch } => {
-            let condition_truth = eval_exp(condition, env);
+            let condition_truth = eval_exp(condition, vars, funs);
             if let Ok(ReturnType::Boolean(truth)) = condition_truth {
-                if truth { eval_exp(if_branch, env) } else { eval_exp(else_branch, env) }
+                if truth {
+                    eval_exp(if_branch, vars, funs)
+                } else {
+                    eval_exp(else_branch, vars, funs)
+                }
+            } else {
+                Err(ErrorKind::InvalidInput)
+            }
+        }
+        Expression::CallExp { name, args } => {
+            if let Some((arguments, body)) = funs.get(name) {
+                if arguments.len() != args.len() {
+                    return Err(ErrorKind::InvalidInput);
+                }
+
+                let mut new_vars = vars.clone();
+
+                for (arg_name, arg_exp) in arguments.iter().zip(args.iter()) {
+                    if let Expression::VarExp(name) = arg_name {
+                        let value = eval_exp(arg_exp, vars, funs)?;
+                        new_vars.insert(name.clone(), value);
+                    } else {
+                        return Err(ErrorKind::InvalidInput);
+                    }
+                }
+
+                eval_exp(&body, &new_vars, funs)
             } else {
                 Err(ErrorKind::InvalidInput)
             }
