@@ -35,4 +35,20 @@ fn test_evaluator() {
     );
     assert!(result_2.is_ok());
     assert_eq!(format!("{:?}", result_2.unwrap()), "Number(3628800)");
+
+    let result_3 = evaluate(
+        parse_programme(
+            tokenise(
+                "
+    fib(number) = number == 1 ? 1 : 
+    number == 0 ? 0 :
+     fib(number - 1) + fib(number  -2 );
+    result = fib(10);
+    result
+    "
+            )
+        )
+    );
+    assert!(result_3.is_ok());
+    assert_eq!(format!("{:?}", result_3.unwrap()), "Number(55)");
 }
