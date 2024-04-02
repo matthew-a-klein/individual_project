@@ -1,8 +1,6 @@
 #[cfg(test)]
 #[test]
 fn test_evaluator() {
-    use chrono::format::Numeric;
-
     use crate::{
         evaluator::evaluator::evaluate,
         lexer::tokeniser::tokenise,
@@ -40,7 +38,7 @@ fn test_evaluator() {
         parse_programme(
             tokenise(
                 "
-    /* JTest the fibonacci numbers*/
+    /*Test the fibonacci numbers*/
     fib(number) = number == 1 ? 1 : 
     number == 0 ? 0 :
     fib(number - 1) + fib(number - 2);
@@ -52,4 +50,52 @@ fn test_evaluator() {
     );
     assert!(result_3.is_ok());
     assert_eq!(format!("{:?}", result_3.unwrap()), "Number(55)");
+
+    let result_4 = evaluate(
+        parse_programme(
+            tokenise(
+                "
+    /*Test the fibonacci numbers*/
+    fib(number) = number == 1 ? 1 : 
+    number == 0 ? 0 :
+    fib(number - 1) + fib(number - 2);
+    result = fib(14);
+    result
+    "
+            )
+        )
+    );
+    assert!(result_4.is_ok());
+    assert_eq!(format!("{:?}", result_4.unwrap()), "Number(377)");
+
+    let result_5 = evaluate(
+        parse_programme(
+            tokenise(
+                "
+    /*Test the triangle numbers arithemetically*/
+    tri(number) = number == 1 ? 1 :
+    tri(number - 1) + number;
+    result = tri(100);
+    result
+    "
+            )
+        )
+    );
+    assert!(result_5.is_ok());
+    assert_eq!(format!("{:?}", result_5.unwrap()), "Number(5050)");
+
+    let result_6 = evaluate(
+        parse_programme(
+            tokenise(
+                "
+    /*Test the triangle numbers non recursively*/
+    tri(number) = (number + 1) * number / 2;
+    result = tri(1000);
+    result
+    "
+            )
+        )
+    );
+    assert!(result_6.is_ok());
+    assert_eq!(format!("{:?}", result_6.unwrap()), "Number(500500)");
 }
