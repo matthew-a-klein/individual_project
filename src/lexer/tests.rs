@@ -1,5 +1,9 @@
 #[cfg(test)]
-use crate::{ lexer::lexer::lexing_simp, regex::reg::{ char, recd, star } };
+use crate::{
+    lexer::{ lexer::lexing_simp, tokeniser::tokenise },
+    regex::reg::{ char, recd, star },
+    tokens::tokens::Token::*,
+};
 
 #[test]
 fn test_lexer() {
@@ -104,4 +108,9 @@ fn test_lexer() {
         ],
         lexing_simp(&reg_5, ",,>..,,<")
     );
+}
+#[test]
+fn test_tokeniser() {
+    let prog_1 = tokenise("1 + 2");
+    assert_eq!(prog_1, vec![Number(1), Operator(String::from("+")), Number(2)]);
 }
