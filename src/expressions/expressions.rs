@@ -1,5 +1,5 @@
 use chrono::{ prelude::*, Duration };
-use std::fmt::{ self, write };
+use std::fmt::{ self };
 #[derive(Clone, PartialEq)]
 pub enum Expression {
     TimeExp(Duration),
@@ -45,8 +45,8 @@ impl fmt::Debug for Expression {
             Expression::InfixExp { left, op, right } => {
                 write!(f, "({:?} {} {:?})", left, op, right)
             }
-            Expression::PostfixExp { left, op } => write!(f, "({:?} {:?})", left, op),
-            Expression::PrefixExp { op, right } => write!(f, "({:?} {:?})", op, right),
+            Expression::PostfixExp { left, op } => write!(f, "({:?} {})", left, op),
+            Expression::PrefixExp { op, right } => write!(f, "({} {:?})", op, right),
             Expression::AssignExp { left, right } => write!(f, "({:?} = {:?})", left, right),
             Expression::ConditionalExp { condition, if_branch, else_branch } =>
                 write!(f, "if {:?} then ({:?}) else ({:?})", condition, if_branch, else_branch),
