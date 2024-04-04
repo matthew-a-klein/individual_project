@@ -51,7 +51,7 @@ impl fmt::Debug for Expression {
             Expression::ConditionalExp { condition, if_branch, else_branch } =>
                 write!(f, "if {:?} then ({:?}) else ({:?})", condition, if_branch, else_branch),
             Expression::CallExp { name, args } => { write!(f, "{}({:?})", name, args) }
-            _ => write!(f, "Not implemented"),
+            Expression::Empty => write!(f, ""),
         }
     }
 }

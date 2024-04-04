@@ -14,7 +14,7 @@ fn test_evaluator() {
                 add(argone, argtwo) = argone + argtwo;
                 sum = add(max(4, 3), max(2, 1));
                 sum"
-            )
+            ).unwrap()
         )
     );
     assert!(result_1.is_ok());
@@ -28,7 +28,7 @@ fn test_evaluator() {
     result = fact(10);
     result
     "
-            )
+            ).unwrap()
         )
     );
     assert!(result_2.is_ok());
@@ -45,7 +45,7 @@ fn test_evaluator() {
     result = fib(10);
     result
     "
-            )
+            ).unwrap()
         )
     );
     assert!(result_3.is_ok());
@@ -62,7 +62,7 @@ fn test_evaluator() {
     result = fib(14);
     result
     "
-            )
+            ).unwrap()
         )
     );
     assert!(result_4.is_ok());
@@ -72,13 +72,14 @@ fn test_evaluator() {
         parse_programme(
             tokenise(
                 "
-    /*Test the triangle numbers arithemetically*/
+    /*Test the triangle numbers recursively
+    Causes stack overflow if pushed too much*/
     tri(number) = number == 1 ? 1 :
     tri(number - 1) + number;
     result = tri(100);
     result
     "
-            )
+            ).unwrap()
         )
     );
     assert!(result_5.is_ok());
@@ -88,14 +89,31 @@ fn test_evaluator() {
         parse_programme(
             tokenise(
                 "
-    /*Test the triangle numbers non recursively*/
+    /*Test the triangle numbers non arithmetically*/
     tri(number) = (number + 1) * number / 2;
     result = tri(1000);
     result
     "
-            )
+            ).unwrap()
         )
     );
     assert!(result_6.is_ok());
     assert_eq!(format!("{:?}", result_6.unwrap()), "Number(500500)");
+
+    let result_7 = evaluate(
+        parse_programme(
+            tokenise(
+                "
+    /*Test the triangle numbers recursively
+    Causes stack overflow if pushed too much*/
+    tri(number) = number == 1 ? 1 :
+    tri(number - 1) + number;
+    result = tri(100);
+    result
+    "
+            ).unwrap()
+        )
+    );
+    assert!(result_7.is_ok());
+    assert_ne!(format!("{:?}", result_7.unwrap()), "Number(5051)");
 }

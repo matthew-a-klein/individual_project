@@ -1,3 +1,5 @@
+use std::io::ErrorKind;
+
 use crate::regex::reg::nullable;
 use crate::regex::reg::Re::*;
 use crate::regex::reg::*;
@@ -54,51 +56,51 @@ pub fn env(v: Val) -> Vec<(String, String)> {
         }
     }
 }
-fn mkeps(r: &Re) -> Val {
+fn mkeps(r: &Re) -> Result<Val, ErrorKind> {
     match r {
-        ZERO => panic!(),
-        ONE => Empty,
-        OPT(_) => Empty,
-        CHAR(_) => panic!(),
+        ZERO => Err(ErrorKind::InvalidInput),
+        ONE => Ok(Empty),
+        OPT(_) => Ok(Empty),
+        CHAR(_) => Err(ErrorKind::InvalidInput),
         ALT(l, r) => {
-            if nullable(l) { Left(Box::new(mkeps(l))) } else { Right(Box::new(mkeps(r))) }
+            if nullable(l) { Ok(Left(Box::new(mkeps(l)?))) } else { Ok(Right(Box::new(mkeps(r)?))) }
         }
-        SEQ(v1, v2) => Sequ(Box::new(mkeps(v1)), Box::new(mkeps(v2))),
-        STAR(_) => Stars(Vec::new()),
-        RECD(s, r) => Rec(s.to_string(), Box::new(mkeps(r))),
+        SEQ(v1, v2) => Ok(Sequ(Box::new(mkeps(v1)?), Box::new(mkeps(v2)?))),
+        STAR(_) => Ok(Stars(Vec::new())),
+        RECD(s, r) => Ok(Rec(s.to_string(), Box::new(mkeps(r)?))),
     }
 }
 
-pub fn inj(r: &Re, c: char, v: Val) -> Val {
+pub fn inj(r: &Re, c: char, v: Val) -> Result<Val, ErrorKind> {
     match (r, v) {
-        (CHAR(_), Empty) => Chr(c),
+        (CHAR(_), Empty) => Ok(Chr(c)),
 
-        (ALT(r1, _), Left(v1)) => Left(Box::new(inj(r1, c, *v1))),
-        (ALT(_, r2), Right(v2)) => Right(Box::new(inj(r2, c, *v2))),
+        (ALT(r1, _), Left(v1)) => Ok(Left(Box::new(inj(r1, c, *v1)?))),
+        (ALT(_, r2), Right(v2)) => Ok(Right(Box::new(inj(r2, c, *v2)?))),
 
-        (SEQ(r1, _), Sequ(v1, v2)) => Sequ(Box::new(inj(r1, c, *v1)), v2),
+        (SEQ(r1, _), Sequ(v1, v2)) => Ok(Sequ(Box::new(inj(r1, c, *v1)?), v2)),
         (SEQ(r1, _), Left(v)) =>
             match *v {
-                Sequ(v1, v2) => Sequ(Box::new(inj(r1, c, *v1)), v2),
-                _ => panic!(),
+                Sequ(v1, v2) => Ok(Sequ(Box::new(inj(r1, c, *v1)?), v2)),
+                _ => Err(ErrorKind::InvalidInput),
             }
         (SEQ(r1, r2), Right(v)) =>
             match *v {
-                v => Sequ(Box::new(mkeps(&*r1)), Box::new(inj(&*r2, c, v))),
+                v => Ok(Sequ(Box::new(mkeps(&*r1)?), Box::new(inj(&*r2, c, v)?))),
             }
 
         (STAR(r), Sequ(v1, v2)) =>
             match *v2 {
                 Stars(vs) => {
                     let mut res = Vec::new();
-                    res.push(inj(r, c, *v1));
+                    res.push(inj(r, c, *v1)?);
                     res.extend(vs);
-                    Stars(res)
+                    Ok(Stars(res))
                 }
                 _ => panic!(),
             }
         // case (RECD(x, r1), _) => Rec(x, inj(r1, c, v))
-        (RECD(s, r), Rec(_, v)) => Rec(s.to_string(), Box::new(inj(r, c, *v))),
+        (RECD(s, r), Rec(_, v)) => Ok(Rec(s.to_string(), Box::new(inj(r, c, *v)?))),
         (r, v) => {
             println!("{:?},   {:?}", r, v);
             panic!()
@@ -207,15 +209,15 @@ fn simp(r: Re) -> (Re, impl Fn(Val) -> Val) {
     }
 }
 
-pub fn lex_simp(r: &Re, s: Vec<char>) -> Val {
+pub fn lex_simp(r: &Re, s: Vec<char>) -> Result<Val, ErrorKind> {
     if let Some((c, cs)) = s.split_first() {
         let (r_simp, f_simp) = simp(der(*c, r));
-        inj(r, *c, f_simp(lex_simp(&r_simp, cs.to_vec())))
+        inj(r, *c, f_simp(lex_simp(&r_simp, cs.to_vec())?))
     } else {
         if nullable(r) { mkeps(r) } else { panic!("lexing error") }
     }
 }
 
-pub fn lexing_simp(r: &Re, s: &str) -> Vec<(String, String)> {
-    env(lex_simp(r, s.chars().collect()))
+pub fn lexing_simp(r: &Re, s: &str) -> Result<Vec<(String, String)>, ErrorKind> {
+    Ok(env(lex_simp(r, s.chars().collect())?))
 }

@@ -1,3 +1,5 @@
+use std::io::ErrorKind;
+
 use crate::{
     lexer::lexer::lexing_simp,
     regex::reg::*,
@@ -208,9 +210,11 @@ pub fn map_to_tokens(s: &(String, String)) -> Option<Token> {
     }
 }
 
-pub fn tokenise(s: &str) -> Vec<Token> {
-    lexing_simp(&prog_reg(), &s)
-        .iter()
-        .filter_map(|x| map_to_tokens(x))
-        .collect()
+pub fn tokenise(s: &str) -> Result<Vec<Token>, ErrorKind> {
+    Ok(
+        lexing_simp(&prog_reg(), &s)?
+            .iter()
+            .filter_map(|x| map_to_tokens(x))
+            .collect()
+    )
 }
