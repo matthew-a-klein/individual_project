@@ -1,0 +1,6 @@
+/*Function that adds one calender day to the
+date that is passed to it*/
+    addDay(date) = date + 1 * day;
+    result = addDay(05//06//2023);
+    result
+    "
