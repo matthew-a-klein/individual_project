@@ -174,7 +174,6 @@ pub fn prog_reg() -> Re {
             recd("m", minute_reg()) |
             recd("s", second_reg()) |
             recd("n", number_reg()) |
-            recd("var", variable_reg()) |
             recd("op", operator_reg()) |
             recd("w", whitespace_reg()) |
             recd("week", week_reg()) |
@@ -185,6 +184,7 @@ pub fn prog_reg() -> Re {
             recd("l_paren", l_paren_reg()) |
             recd("r_paren", r_paren_reg()) |
             recd("semi", semi_reg()) |
+            recd("var", variable_reg()) |
             recd("comment", comment_reg())
     )
 }

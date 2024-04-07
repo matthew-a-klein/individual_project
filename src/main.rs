@@ -11,14 +11,5 @@ mod regex;
 mod tokens;
 
 fn main() -> () {
-    println!(
-        "{:?}",
-        evaluate(
-            parse_programme(
-                tokenise(
-                    "functioncall(argone, argtwo) = argone == argtwo? argone: argtwo;argfour = functioncall(1,2);argfour  "
-                ).unwrap()
-            )
-        )
-    );
+    println!("{:?}", tokenise("m = 12"));
 }

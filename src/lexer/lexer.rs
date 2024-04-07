@@ -5,6 +5,8 @@ use crate::regex::reg::Re::*;
 use crate::regex::reg::*;
 use Val::*;
 #[derive(Debug, Clone, PartialEq)]
+
+//A value represents how the string matched the regular expression
 pub enum Val {
     Empty,
     Chr(char),
@@ -15,6 +17,8 @@ pub enum Val {
     // Extended Regular Expressions
     Rec(String, Box<Val>),
 }
+
+// Produces a string from a matching value
 fn flatten(v: &Val) -> String {
     match v {
         Empty => String::new(),
@@ -31,7 +35,7 @@ fn flatten(v: &Val) -> String {
         Rec(_, v) => flatten(v),
     }
 }
-
+//Returns a list of strings and their category
 pub fn env(v: Val) -> Vec<(String, String)> {
     match v {
         Empty => Vec::new(),
@@ -99,14 +103,12 @@ pub fn inj(r: &Re, c: char, v: Val) -> Result<Val, ErrorKind> {
                 }
                 _ => panic!(),
             }
-        // case (RECD(x, r1), _) => Rec(x, inj(r1, c, v))
         (RECD(s, r), Rec(_, v)) => Ok(Rec(s.to_string(), Box::new(inj(r, c, *v)?))),
-        (r, v) => {
-            println!("{:?},   {:?}", r, v);
-            panic!()
-        }
+        _ => { Err(ErrorKind::InvalidInput) }
     }
 }
+
+// The following function correct errors wrought by the simplification function
 
 fn f_id() -> Box<dyn Fn(Val) -> Val> {
     Box::new(move |v| v)
@@ -205,19 +207,21 @@ fn simp(r: Re) -> (Re, impl Fn(Val) -> Val) {
             let (rs, fs) = simp(*r);
             (RECD(s, Box::new(rs)), f_recd(fs))
         }
-        r => (r, f_id()),
+        _ => (r, f_id()),
     }
 }
-
+// Returns how a string of characters matches a regular expression
 pub fn lex_simp(r: &Re, s: Vec<char>) -> Result<Val, ErrorKind> {
     if let Some((c, cs)) = s.split_first() {
         let (r_simp, f_simp) = simp(der(*c, r));
         inj(r, *c, f_simp(lex_simp(&r_simp, cs.to_vec())?))
     } else {
-        if nullable(r) { mkeps(r) } else { panic!("lexing error") }
+        if nullable(r) { mkeps(r) } else { Err(ErrorKind::InvalidInput) }
     }
 }
-
+// A wrapper function for lex simp
+// The lex simp function takes a vector of characters, this takes a string and calls the
+// lex simp function on the corresponding vec of characters
 pub fn lexing_simp(r: &Re, s: &str) -> Result<Vec<(String, String)>, ErrorKind> {
     Ok(env(lex_simp(r, s.chars().collect())?))
 }

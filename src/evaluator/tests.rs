@@ -116,4 +116,20 @@ fn test_evaluator() {
     );
     assert!(result_7.is_ok());
     assert_ne!(format!("{:?}", result_7.unwrap()), "Number(5051)");
+
+    let result_8 = evaluate(
+        parse_programme(
+            tokenise(
+                "
+    /*Make sure that dates and times 
+    execute properly*/
+    addDay(date) = date + 1 * day;
+    result = addDay(05//06//2023);
+    result
+    "
+            ).unwrap()
+        )
+    );
+    assert!(result_8.is_ok());
+    assert_eq!(format!("{:?}", result_8.unwrap()), "Date(2023-06-06T00:00:00Z)");
 }
