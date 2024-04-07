@@ -17,7 +17,6 @@ use crate::{
 use super::{ binop_parser::parse_binop, paren_parser::parse_paren, var_parser::parse_var };
 
 pub fn parse_prefix(limit: i32, tokens: Vec<Token>) -> (Expression, Vec<Token>) {
-    println!("Parsing Prefix: {:?} with limit {:?}", tokens, limit);
     if tokens.len() == 0 {
         (Expression::Empty, Vec::new())
     } else {
@@ -38,7 +37,6 @@ pub fn parse_infix(
     tokens: Vec<Token>,
     prec_limit: i32
 ) -> (Expression, Vec<Token>) {
-    println!("Parsing Infix: {:?} with limit {:?}", tokens, prec_limit);
     if tokens.len() == 0 || get_precedence(&tokens[0]) <= prec_limit {
         (left, tokens)
     } else {
@@ -63,7 +61,6 @@ pub fn parse_expressions(
         (expressions, toks)
     } else {
         let (expression, remaining_tokens) = parse_prefix(0, toks);
-        println!("Expression: {:?}", expression);
         expressions.extend(vec![expression]);
         if !remaining_tokens.is_empty() && remaining_tokens[0] == Token::Semi {
             parse_expressions(expressions, remaining_tokens[1..].to_vec())

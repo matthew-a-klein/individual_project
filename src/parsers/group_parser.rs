@@ -7,7 +7,6 @@ pub fn parse_group(
     tokens: Vec<Token>,
     prec_limit: i32
 ) -> (Expression, Vec<Token>) {
-    println!("{:?}", tokens);
     if let Expression::VarExp(s) = left {
         if let LParen(_) = &tokens[0] {
             let (args, tokens_after) = parse_args(Vec::new(), tokens[1..].to_vec());
