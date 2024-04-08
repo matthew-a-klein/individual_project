@@ -35,8 +35,22 @@ fn main() {
 
     // Process the file content
     match process_file(file) {
-        Ok(content) =>
-            println!("{:?}", evaluate(parse_programme(tokenise(&content).unwrap()).unwrap())),
+        Ok(content) => {
+            match tokenise(&content) {
+                Ok(tokens) => {
+                    match parse_programme(tokens) {
+                        Ok(program) => {
+                            match evaluate(program) {
+                                Ok(result) => println!("{}", result),
+                                Err(e) => println!("Error evaluating program: {}", e),
+                            }
+                        }
+                        Err(e) => println!("Error parsing program: {}", e),
+                    }
+                }
+                Err(e) => println!("Error tokenising content: {}", e),
+            }
+        }
         Err(e) => println!("Error processing file: {}", e),
     }
 }

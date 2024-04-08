@@ -1,4 +1,4 @@
-use std::{ collections::HashMap, io::ErrorKind, ops };
+use std::{ collections::HashMap, fmt, io::ErrorKind, ops };
 
 use chrono::{ prelude::*, Duration };
 
@@ -10,6 +10,17 @@ pub enum ReturnType {
     Time(Duration),
     Number(i32),
     Boolean(bool),
+}
+
+impl fmt::Display for ReturnType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ReturnType::Date(date_time) => write!(f, "{}", date_time),
+            ReturnType::Time(duration) => write!(f, "{}", duration),
+            ReturnType::Number(num) => write!(f, "{}", num),
+            ReturnType::Boolean(boolean) => write!(f, "{}", boolean),
+        }
+    }
 }
 
 pub fn evaluate(prog: Vec<Expression>) -> Result<ReturnType, ErrorKind> {
