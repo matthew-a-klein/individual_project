@@ -1,3 +1,5 @@
+use std::io::ErrorKind;
+
 use crate::{
     expressions::expressions::Expression::{ self, * },
     tokens::{ token_classification::get_precedence, tokens::Token::{ self, * } },
@@ -9,10 +11,10 @@ pub fn parse_binop(
     left: Expression,
     tokens: Vec<Token>,
     prec_limit: i32
-) -> (Expression, Vec<Token>) {
+) -> Result<(Expression, Vec<Token>), ErrorKind> {
     if let Operator(s) = &tokens[0] {
         let limit = get_precedence(&tokens[0]);
-        let (right, tokens_after) = parse_prefix(limit, tokens[1..].to_vec());
+        let (right, tokens_after) = parse_prefix(limit, tokens[1..].to_vec())?;
         parse_infix(
             InfixExp {
                 left: Box::new(left),

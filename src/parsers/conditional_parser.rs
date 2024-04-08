@@ -1,3 +1,5 @@
+use std::io::ErrorKind;
+
 use crate::{
     expressions::expressions::Expression::{ self, ConditionalExp },
     tokens::tokens::Token,
@@ -9,14 +11,14 @@ pub fn parse_conditional(
     left: Expression,
     tokens: Vec<Token>,
     prec_limit: i32
-) -> (Expression, Vec<Token>) {
-    let (then_arm, tokens_remaining) = parse(tokens[1..].to_vec());
+) -> Result<(Expression, Vec<Token>), ErrorKind> {
+    let (then_arm, tokens_remaining) = parse(tokens[1..].to_vec())?;
     match &tokens_remaining[0] {
         Token::Operator(s) if s.as_str() == ":" => {
             let (else_arm, tokens_still_remaining) = parse_prefix(
                 1,
                 tokens_remaining[1..].to_vec()
-            );
+            )?;
             parse_infix(
                 ConditionalExp {
                     condition: Box::new(left),
@@ -27,6 +29,6 @@ pub fn parse_conditional(
                 prec_limit
             )
         }
-        _ => panic!("Invalid conditional expression"),
+        _ => Err(ErrorKind::InvalidInput),
     }
 }

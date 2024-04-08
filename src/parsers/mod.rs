@@ -6,7 +6,6 @@ pub mod main_parser;
 pub mod number_parser;
 pub mod postfix_parser;
 pub mod prefix_parser;
-pub mod r_paren_parser;
 pub mod time_parser;
 pub mod var_parser;
 pub mod conditional_parser;

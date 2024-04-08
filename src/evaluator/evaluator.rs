@@ -24,7 +24,7 @@ fn eval_prog(
 ) -> Result<ReturnType, ErrorKind> {
     match &prog[0] {
         Expression::AssignExp { .. } => {
-            let (new_vars, new_funs) = eval_stmt(&prog[0], env, funs);
+            let (new_vars, new_funs) = eval_stmt(&prog[0], env, funs)?;
             eval_prog(prog[1..].to_vec(), &new_vars, &new_funs)
         }
         _ => eval_exp(&prog[0], env, funs),
@@ -37,24 +37,24 @@ pub fn eval_stmt(
     exp: &Expression,
     vars: &HashMap<String, ReturnType>,
     funs: &HashMap<String, (Vec<Expression>, Box<Expression>)>
-) -> (HashMap<String, ReturnType>, HashMap<String, (Vec<Expression>, Box<Expression>)>) {
+) -> Result<
+    (HashMap<String, ReturnType>, HashMap<String, (Vec<Expression>, Box<Expression>)>),
+    ErrorKind
+> {
     match &exp {
         Expression::AssignExp { left, right } => {
             match *left.clone() {
                 Expression::VarExp(name) => {
-                    let value = eval_exp(right, vars, funs);
-                    if value.is_ok() {
-                        let mut new_vars = vars.clone();
-                        new_vars.insert(name, value.unwrap());
-                        (new_vars, funs.clone())
-                    } else {
-                        panic!()
-                    }
+                    let value = eval_exp(right, vars, funs)?;
+
+                    let mut new_vars = vars.clone();
+                    new_vars.insert(name, value);
+                    Ok((new_vars, funs.clone()))
                 }
                 Expression::CallExp { name, args } => {
                     let mut new_funs = funs.clone();
                     new_funs.insert(name, (args, right.clone()));
-                    (vars.clone(), new_funs)
+                    Ok((vars.clone(), new_funs))
                 }
                 _ => unimplemented!(),
             }

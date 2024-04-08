@@ -35,7 +35,8 @@ fn main() {
 
     // Process the file content
     match process_file(file) {
-        Ok(content) => println!("{:?}", evaluate(parse_programme(tokenise(&content).unwrap()))),
+        Ok(content) =>
+            println!("{:?}", evaluate(parse_programme(tokenise(&content).unwrap()).unwrap())),
         Err(e) => println!("Error processing file: {}", e),
     }
 }

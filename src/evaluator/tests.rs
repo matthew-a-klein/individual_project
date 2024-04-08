@@ -15,7 +15,7 @@ fn test_evaluator() {
                 sum = add(max(4, 3), max(2, 1));
                 sum"
             ).unwrap()
-        )
+        ).unwrap()
     );
     assert!(result_1.is_ok());
     assert_eq!(format!("{:?}", result_1.unwrap()), "Number(6)");
@@ -29,7 +29,7 @@ fn test_evaluator() {
     result
     "
             ).unwrap()
-        )
+        ).unwrap()
     );
     assert!(result_2.is_ok());
     assert_eq!(format!("{:?}", result_2.unwrap()), "Number(3628800)");
@@ -46,7 +46,7 @@ fn test_evaluator() {
     result
     "
             ).unwrap()
-        )
+        ).unwrap()
     );
     assert!(result_3.is_ok());
     assert_eq!(format!("{:?}", result_3.unwrap()), "Number(55)");
@@ -63,7 +63,7 @@ fn test_evaluator() {
     result
     "
             ).unwrap()
-        )
+        ).unwrap()
     );
     assert!(result_4.is_ok());
     assert_eq!(format!("{:?}", result_4.unwrap()), "Number(377)");
@@ -80,7 +80,7 @@ fn test_evaluator() {
     result
     "
             ).unwrap()
-        )
+        ).unwrap()
     );
     assert!(result_5.is_ok());
     assert_eq!(format!("{:?}", result_5.unwrap()), "Number(5050)");
@@ -95,7 +95,7 @@ fn test_evaluator() {
     result
     "
             ).unwrap()
-        )
+        ).unwrap()
     );
     assert!(result_6.is_ok());
     assert_eq!(format!("{:?}", result_6.unwrap()), "Number(500500)");
@@ -112,7 +112,7 @@ fn test_evaluator() {
     result
     "
             ).unwrap()
-        )
+        ).unwrap()
     );
     assert!(result_7.is_ok());
     assert_ne!(format!("{:?}", result_7.unwrap()), "Number(5051)");
@@ -128,7 +128,7 @@ fn test_evaluator() {
     result
     "
             ).unwrap()
-        )
+        ).unwrap()
     );
     assert!(result_8.is_ok());
     assert_eq!(format!("{:?}", result_8.unwrap()), "Date(2023-06-06T00:00:00Z)");
