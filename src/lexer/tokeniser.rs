@@ -77,7 +77,7 @@ fn letter_reg() -> Re {
 }
 
 fn number_reg() -> Re {
-    star(digit_reg())
+    digit_reg() + star(digit_reg())
 }
 
 fn comment_reg() -> Re {
@@ -87,7 +87,7 @@ fn comment_reg() -> Re {
 }
 
 fn variable_reg() -> Re {
-    star(letter_reg()) + number_reg()
+    letter_reg() + star(letter_reg()) + opt(number_reg())
 }
 
 pub fn whitespace_reg() -> Re {
