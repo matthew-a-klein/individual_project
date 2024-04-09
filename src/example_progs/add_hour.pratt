@@ -1,2 +1,2 @@
 /* Example programme for time durations */
-  month + 1 * hour + 1 * minute * 2 / 3+ 1 * second + year
+ month - 12//04//2024

@@ -87,7 +87,7 @@ fn comment_reg() -> Re {
 }
 
 fn variable_reg() -> Re {
-    letter_reg() + star(letter_reg()) + opt(number_reg())
+    letter_reg() + star(letter_reg()) + star(digit_reg())
 }
 
 pub fn whitespace_reg() -> Re {
@@ -143,7 +143,9 @@ pub fn operator_reg() -> Re {
         char('<') |
         char('<') |
         char(',') |
-        string_to_rexp("==")
+        string_to_rexp("==") |
+        string_to_rexp("<=") |
+        string_to_rexp(">=")
 }
 
 pub fn semi_reg() -> Re {
