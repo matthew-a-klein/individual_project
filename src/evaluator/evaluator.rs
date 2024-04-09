@@ -100,7 +100,13 @@ fn eval_exp(
                 _ => Err(ErrorKind::InvalidInput),
             }
         }
-        Expression::VarExp(s) => Ok(vars.get(s).unwrap().clone()),
+        Expression::VarExp(s) => {
+            let value = vars.get(s);
+            match value {
+                None => Err(ErrorKind::InvalidInput),
+                Some(val) => Ok(val.clone()),
+            }
+        }
 
         Expression::ConditionalExp { condition, if_branch, else_branch } => {
             let condition_truth = eval_exp(condition, vars, funs);
