@@ -15,8 +15,29 @@ pub enum ReturnType {
 impl fmt::Display for ReturnType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ReturnType::Date(date_time) => write!(f, "{}", date_time),
-            ReturnType::Time(duration) => write!(f, "{}", duration),
+            ReturnType::Date(date_time) => write!(f, "{}", date_time.format("%d/%m/%Y %H:%M:%S")),
+            ReturnType::Time(duration) => {
+                let days = duration.num_days();
+                let (years, remaining_days) = (days / 365, days % 365);
+                let (hours, remaining_hours) = (
+                    duration.num_hours() % 24,
+                    duration.num_minutes() % 60,
+                );
+                let (minutes, seconds) = (duration.num_minutes() % 60, duration.num_seconds() % 60);
+                if years > 0 {
+                    write!(
+                        f,
+                        "{} years, {} days, {:02}:{:02}:{:02}",
+                        years,
+                        remaining_days,
+                        hours,
+                        minutes,
+                        seconds
+                    )
+                } else {
+                    write!(f, "{} days, {:02}:{:02}:{:02}", remaining_days, hours, minutes, seconds)
+                }
+            }
             ReturnType::Number(num) => write!(f, "{}", num),
             ReturnType::Boolean(boolean) => write!(f, "{}", boolean),
         }
