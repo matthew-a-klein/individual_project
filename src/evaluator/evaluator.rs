@@ -118,6 +118,9 @@ fn eval_exp(
 
                 "==" => { Ok(ReturnType::Boolean(left == right)) }
                 "<" => { Ok(ReturnType::Boolean(left < right)) }
+                ">" => { Ok(ReturnType::Boolean(left > right)) }
+                "<=" => { Ok(ReturnType::Boolean(left <= right)) }
+                ">=" => { Ok(ReturnType::Boolean(left >= right)) }
                 _ => Err(ErrorKind::InvalidInput),
             }
         }

@@ -132,4 +132,26 @@ fn test_evaluator() {
     );
     assert!(result_8.is_ok());
     assert_eq!(format!("{:?}", result_8.unwrap()), "Date(2023-06-06T00:00:00Z)");
+
+    let result_9 = evaluate(
+        parse_programme(
+            tokenise(
+                "
+    /*Test equality and comparison operations */
+
+    less = 3==3 ? 3 : 5;
+
+    more = less  <= 4? 2: 6;
+
+    more1 = more >=1? 5 : 7;
+
+    more1
+    
+
+    "
+            ).unwrap()
+        ).unwrap()
+    );
+    assert!(result_9.is_ok());
+    assert_eq!(format!("{:?}", result_9.unwrap()), "Number(5)");
 }

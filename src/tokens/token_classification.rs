@@ -5,7 +5,13 @@ pub fn get_precedence(t: &Token) -> i32 {
         Semi => 0,
         Operator(s) if s.as_str() == "," => 0,
         Operator(s) if s.as_str() == "=" || s.as_str() == ":" => 1,
-        Operator(s) if s.as_str() == "==" || s.as_str() == ">" || s.as_str() == "<" => 2,
+        Operator(s) if
+            s.as_str() == "==" ||
+            s.as_str() == ">" ||
+            s.as_str() == "<" ||
+            s.as_str() == ">=" ||
+            s.as_str() == "<="
+        => 2,
         Operator(s) if s.as_str() == "?" => 2,
         Operator(s) if s.as_str() == "+" || s.as_str() == "-" => 3,
         Operator(s) if s.as_str() == "*" || s.as_str() == "/" => 4,
