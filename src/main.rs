@@ -42,13 +42,13 @@ fn main() {
                         Ok(program) => {
                             match evaluate(program) {
                                 Ok(result) => println!("{}", result),
-                                Err(e) => println!("Error evaluating program: {}", e),
+                                Err(_) => println!("Error evaluating program."),
                             }
                         }
-                        Err(e) => println!("Error parsing program: {}", e),
+                        Err(_) => println!("Error parsing program."),
                     }
                 }
-                Err(e) => println!("Error tokenising content: {}", e),
+                Err(_) => println!("Error tokenising content."),
             }
         }
         Err(e) => println!("Error processing file: {}", e),

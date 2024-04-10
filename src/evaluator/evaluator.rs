@@ -111,11 +111,12 @@ fn eval_exp(
             let left = eval_exp(left, vars, funs)?;
             let right = eval_exp(right, vars, funs)?;
             match op.as_str() {
+                // Mathematical operations
                 "+" => { left + right }
                 "*" => { left * right }
                 "-" => { left - right }
                 "/" => { left / right }
-
+                // Boolean comparison operators
                 "==" => { Ok(ReturnType::Boolean(left == right)) }
                 "<" => { Ok(ReturnType::Boolean(left < right)) }
                 ">" => { Ok(ReturnType::Boolean(left > right)) }
