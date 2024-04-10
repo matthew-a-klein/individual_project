@@ -7,6 +7,7 @@ use crate::{
 
 use super::main_parser::parse_infix;
 
+// Parses a postfix expression.
 pub fn parse_postfix(
     left: Expression,
     tokens: Vec<Token>,

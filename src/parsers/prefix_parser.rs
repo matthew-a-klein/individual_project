@@ -7,6 +7,7 @@ use crate::{
 
 use super::main_parser::{ parse_infix, parse_prefix };
 
+//Parses a prefix expression
 pub fn parse_prefix_op(
     tokens: Vec<Token>,
     prec_limit: i32
@@ -23,6 +24,6 @@ pub fn parse_prefix_op(
             prec_limit
         )
     } else {
-        panic!()
+        panic!("Unexpected token, expected operator.")
     }
 }

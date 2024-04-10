@@ -6,6 +6,7 @@ use crate::{ expressions::expressions::Expression, tokens::tokens::{ Time, Token
 
 use super::main_parser::parse_infix;
 
+// Parses a time expression from the given tokens.
 pub fn parse_time(
     tokens: Vec<Token>,
     prec_limit: i32
@@ -14,10 +15,11 @@ pub fn parse_time(
         let date: Expression = Expression::TimeExp(time_from_string(t));
         parse_infix(date, tokens[1..].to_vec(), prec_limit)
     } else {
-        panic!()
+        panic!("Unexpected token, expected TimeLength");
     }
 }
 
+// Converts a Time token into a Duration.
 fn time_from_string(t: &Time) -> Duration {
     match t {
         Time::Second => Duration::seconds(1),

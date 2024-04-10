@@ -1,3 +1,5 @@
+// This function parses a variable expression from the given tokens.
+
 use std::io::ErrorKind;
 
 use crate::{
@@ -7,6 +9,7 @@ use crate::{
 
 use super::main_parser::parse_infix;
 
+/// Parses a variable expression.
 pub fn parse_var(
     tokens: Vec<Token>,
     prec_limit: i32
@@ -14,6 +17,7 @@ pub fn parse_var(
     if let Var(s) = &tokens[0] {
         parse_infix(VarExp(s.to_string()), tokens[1..].to_vec(), prec_limit)
     } else {
-        panic!()
+        // Panic if the first token is not a Var
+        panic!("Unexpected token, expected Var")
     }
 }

@@ -1,3 +1,6 @@
+// This module provides parsers for different types of expressions and operators,
+// enabling the parsing of a program's tokens into an abstract syntax tree (AST).
+
 use std::io::ErrorKind;
 
 use crate::{
@@ -17,6 +20,7 @@ use crate::{
 
 use super::{ binop_parser::parse_binop, paren_parser::parse_paren, var_parser::parse_var };
 
+/// Parses a prefix expression from the given tokens up to a specified limit of precedence.
 pub fn parse_prefix(limit: i32, tokens: Vec<Token>) -> Result<(Expression, Vec<Token>), ErrorKind> {
     if tokens.len() == 0 {
         Ok((Expression::Empty, Vec::new()))
@@ -33,6 +37,7 @@ pub fn parse_prefix(limit: i32, tokens: Vec<Token>) -> Result<(Expression, Vec<T
     }
 }
 
+/// Parses an infix expression by combining it with the left expression, up to a specified precedence limit.
 pub fn parse_infix(
     left: Expression,
     tokens: Vec<Token>,
@@ -54,6 +59,7 @@ pub fn parse_infix(
     }
 }
 
+/// Parses a sequence of expressions from the given tokens.
 pub fn parse_expressions(
     mut expressions: Vec<Expression>,
     toks: Vec<Token>
@@ -71,10 +77,12 @@ pub fn parse_expressions(
     }
 }
 
+/// Parses a single expression from the given tokens.
 pub fn parse(toks: Vec<Token>) -> Result<(Expression, Vec<Token>), ErrorKind> {
     parse_prefix(0, toks)
 }
 
+/// Parses all tokens into a single expression.
 pub fn parse_all(toks: Vec<Token>) -> Result<Expression, ErrorKind> {
     let (parsed, unparsed) = parse(toks)?;
     if unparsed.is_empty() {
@@ -84,6 +92,7 @@ pub fn parse_all(toks: Vec<Token>) -> Result<Expression, ErrorKind> {
     }
 }
 
+/// Parses a sequence of expressions representing a program.
 pub fn parse_programme(toks: Vec<Token>) -> Result<Vec<Expression>, ErrorKind> {
     let (parsed, unparsed) = parse_expressions(Vec::new(), toks)?;
     if unparsed.is_empty() {

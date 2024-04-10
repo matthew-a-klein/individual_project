@@ -4,6 +4,7 @@ use crate::{ expressions::expressions::Expression::{ self }, tokens::tokens::Tok
 
 use super::main_parser::{ parse_infix, parse_prefix };
 
+// Parses a parenthesised expression.
 pub fn parse_paren(
     tokens: Vec<Token>,
     prec_limit: i32
@@ -16,6 +17,6 @@ pub fn parse_paren(
             Err(ErrorKind::InvalidInput)
         }
     } else {
-        panic!()
+        panic!("Unexpected token, expected LParen");
     }
 }

@@ -4,6 +4,7 @@ use crate::{ expressions::expressions::Expression::{ self }, tokens::tokens::Tok
 
 use super::main_parser::{ parse_infix, parse_prefix };
 
+// Parses a grouped expression, typically a function call.
 pub fn parse_group(
     left: Expression,
     tokens: Vec<Token>,
@@ -26,6 +27,7 @@ pub fn parse_group(
     }
 }
 
+// Helper function to parse arguments inside parentheses.
 fn parse_args(
     mut args: Vec<Expression>,
     toks: Vec<Token>
