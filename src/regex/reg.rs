@@ -1,6 +1,6 @@
 // Regular expression definition and associated functions.
 
-// Enum to represent different types of regular expressions.
+// Represents different types of regular expressions.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Re {
     ZERO,
@@ -13,7 +13,7 @@ pub enum Re {
     RECD(String, Box<Re>),
 }
 
-// Function to determine if a regular expression is nullable.
+// Determines if a regular expression is nullable.
 pub fn nullable(r: &Re) -> bool {
     match r {
         Re::ZERO => false,
@@ -27,7 +27,7 @@ pub fn nullable(r: &Re) -> bool {
     }
 }
 
-// Function to compute the derivative of a regular expression with respect to a character.
+// Computes the derivative of a regular expression with respect to a character.
 pub fn der(c: char, re: &Re) -> Re {
     match re {
         Re::ZERO => Re::ZERO,
@@ -50,7 +50,7 @@ pub fn der(c: char, re: &Re) -> Re {
     }
 }
 
-// Function to simplify a regular expression.
+// Simplifies a regular expression.
 fn simp(re: &Re) -> &Re {
     match re {
         Re::ALT(l, r) =>
@@ -71,7 +71,7 @@ fn simp(re: &Re) -> &Re {
     }
 }
 
-// Function to compute the derivative of a regular expression with respect to a string.
+// Computes the derivative of a regular expression with respect to a string.
 pub fn ders<'a>(s: &'a str, re: &'a Re) -> Re {
     match s.chars().next() {
         None => re.clone(),
@@ -83,37 +83,37 @@ pub fn ders<'a>(s: &'a str, re: &'a Re) -> Re {
     }
 }
 
-// Function to determine if a given string matches a regular expression.
+// Determines if a given string matches a regular expression.
 pub fn matcher(r: &Re, s: &str) -> bool {
     nullable(&ders(s, r))
 }
 
-// Function to create a character regular expression.
+// Creates a character regular expression.
 pub fn char(c: char) -> Re {
     Re::CHAR(c)
 }
 
-// Function to concatenate two regular expressions.
+// Concatenates two regular expressions.
 pub fn concat(re1: Re, re2: Re) -> Re {
     Re::SEQ(Box::new(re1), Box::new(re2))
 }
 
-// Function to create an optional regular expression.
+// Creates an optional regular expression.
 pub fn opt(r: Re) -> Re {
     Re::OPT(Box::new(r))
 }
 
-// Function to create an alternation of two regular expressions.
+// Creates an alternation of two regular expressions.
 pub fn alt(re1: Re, re2: Re) -> Re {
     Re::ALT(Box::new(re1), Box::new(re2))
 }
 
-// Function to create a Kleene star regular expression.
+// Creates a Kleene star regular expression.
 pub fn star(re: Re) -> Re {
     Re::STAR(Box::new(re))
 }
 
-// Function to create a record regular expression.
+// Creates a record regular expression.
 pub fn recd(s: &str, r: Re) -> Re {
     Re::RECD(s.to_string(), Box::new(r))
 }
@@ -135,7 +135,7 @@ impl std::ops::BitOr for Re {
     }
 }
 
-// Function to convert a list of characters into a regular expression.
+// Converts a list of characters into a regular expression.
 pub fn char_list_to_rexp(s: &[char]) -> Re {
     match s {
         [] => Re::ONE,
@@ -144,7 +144,7 @@ pub fn char_list_to_rexp(s: &[char]) -> Re {
     }
 }
 
-// Function to convert a string into a regular expression.
+// Converts a string into a regular expression.
 pub fn string_to_rexp(s: &str) -> Re {
     char_list_to_rexp(s.chars().collect::<Vec<char>>().as_slice())
 }
