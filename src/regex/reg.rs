@@ -1,4 +1,6 @@
-use Re::*;
+// Regular expression definition and associated functions.
+
+// Enum to represent different types of regular expressions.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Re {
     ZERO,
@@ -11,66 +13,65 @@ pub enum Re {
     RECD(String, Box<Re>),
 }
 
+// Function to determine if a regular expression is nullable.
 pub fn nullable(r: &Re) -> bool {
     match r {
-        ZERO => false,
-        ONE => true,
-        CHAR(_) => false,
-        OPT(_) => true,
-        ALT(l, r) => nullable(&*l) || nullable(&*r),
-        SEQ(r1, r2) => nullable(&*r1) && nullable(&*r2),
-        STAR(_) => true,
-        RECD(_, r) => nullable(r),
+        Re::ZERO => false,
+        Re::ONE => true,
+        Re::CHAR(_) => false,
+        Re::OPT(_) => true,
+        Re::ALT(l, r) => nullable(&*l) || nullable(&*r),
+        Re::SEQ(r1, r2) => nullable(&*r1) && nullable(&*r2),
+        Re::STAR(_) => true,
+        Re::RECD(_, r) => nullable(r),
     }
 }
 
+// Function to compute the derivative of a regular expression with respect to a character.
 pub fn der(c: char, re: &Re) -> Re {
     match re {
-        ZERO => ZERO,
-        ONE => ZERO,
-        CHAR(d) => {
-            if c == *d { ONE } else { ZERO }
-        }
-        OPT(r) => der(c, r),
-        ALT(l, r) => ALT(Box::new(der(c, &*l)), Box::new(der(c, &*r))), // Wrapped with Box::new
-        SEQ(r1, r2) => {
+        Re::ZERO => Re::ZERO,
+        Re::ONE => Re::ZERO,
+        Re::CHAR(d) => if c == *d { Re::ONE } else { Re::ZERO }
+        Re::OPT(r) => der(c, r),
+        Re::ALT(l, r) => Re::ALT(Box::new(der(c, &*l)), Box::new(der(c, &*r))),
+        Re::SEQ(r1, r2) => {
             if nullable(&*r1) {
-                ALT(
-                    Box::new(SEQ(Box::new(der(c, &*r1)), Box::new(*r2.clone()))),
+                Re::ALT(
+                    Box::new(Re::SEQ(Box::new(der(c, &*r1)), Box::new(*r2.clone()))),
                     Box::new(der(c, &*r2))
                 )
             } else {
-                SEQ(Box::new(der(c, &*r1)), Box::new(*r2.clone()))
+                Re::SEQ(Box::new(der(c, &*r1)), Box::new(*r2.clone()))
             }
         }
-
-        STAR(r) => SEQ(Box::new(der(c, r)), Box::new(STAR(Box::new(*r.clone())))),
-        RECD(s, r) => RECD(s.to_string(), Box::new(der(c, r))),
+        Re::STAR(r) => Re::SEQ(Box::new(der(c, r)), Box::new(Re::STAR(Box::new(*r.clone())))),
+        Re::RECD(s, r) => Re::RECD(s.to_string(), Box::new(der(c, r))),
     }
 }
 
+// Function to simplify a regular expression.
 fn simp(re: &Re) -> &Re {
     match re {
-        ALT(l, r) =>
+        Re::ALT(l, r) =>
             match (simp(l), simp(r)) {
-                (ZERO, rs) => rs,
-                (ls, ZERO) => ls,
-                (ls, rs) => {
-                    if rs == ls { ls } else { re }
-                }
+                (Re::ZERO, rs) => rs,
+                (ls, Re::ZERO) => ls,
+                (ls, rs) => if rs == ls { ls } else { re }
             }
-        SEQ(r1, r2) =>
+        Re::SEQ(r1, r2) =>
             match (simp(r1), simp(r2)) {
-                (ZERO, _) => &ZERO,
-                (_, ZERO) => &ZERO,
-                (ONE, r2) => r2,
-                (r1, ONE) => r1,
+                (Re::ZERO, _) => &Re::ZERO,
+                (_, Re::ZERO) => &Re::ZERO,
+                (Re::ONE, r2) => r2,
+                (r1, Re::ONE) => r1,
                 (_, _) => re,
             }
-        re => re,
+        _ => re,
     }
 }
 
+// Function to compute the derivative of a regular expression with respect to a string.
 pub fn ders<'a>(s: &'a str, re: &'a Re) -> Re {
     match s.chars().next() {
         None => re.clone(),
@@ -82,33 +83,42 @@ pub fn ders<'a>(s: &'a str, re: &'a Re) -> Re {
     }
 }
 
+// Function to determine if a given string matches a regular expression.
 pub fn matcher(r: &Re, s: &str) -> bool {
     nullable(&ders(s, r))
 }
 
+// Function to create a character regular expression.
 pub fn char(c: char) -> Re {
-    CHAR(c)
+    Re::CHAR(c)
 }
 
+// Function to concatenate two regular expressions.
 pub fn concat(re1: Re, re2: Re) -> Re {
-    SEQ(Box::new(re1), Box::new(re2))
+    Re::SEQ(Box::new(re1), Box::new(re2))
 }
+
+// Function to create an optional regular expression.
 pub fn opt(r: Re) -> Re {
-    OPT(Box::new(r))
+    Re::OPT(Box::new(r))
 }
 
+// Function to create an alternation of two regular expressions.
 pub fn alt(re1: Re, re2: Re) -> Re {
-    ALT(Box::new(re1), Box::new(re2))
+    Re::ALT(Box::new(re1), Box::new(re2))
 }
 
+// Function to create a Kleene star regular expression.
 pub fn star(re: Re) -> Re {
-    STAR(Box::new(re))
+    Re::STAR(Box::new(re))
 }
 
+// Function to create a record regular expression.
 pub fn recd(s: &str, r: Re) -> Re {
-    RECD(s.to_string(), Box::new(r))
+    Re::RECD(s.to_string(), Box::new(r))
 }
 
+// Implementations for operators for ease of use.
 impl std::ops::Add for Re {
     type Output = Re;
 
@@ -125,14 +135,16 @@ impl std::ops::BitOr for Re {
     }
 }
 
+// Function to convert a list of characters into a regular expression.
 pub fn char_list_to_rexp(s: &[char]) -> Re {
     match s {
-        [] => ONE,
+        [] => Re::ONE,
         [c] => char(*c),
-        [c, rest @ ..] => SEQ(Box::new(char(*c)), Box::new(char_list_to_rexp(rest))),
+        [c, rest @ ..] => concat(char(*c), char_list_to_rexp(rest)),
     }
 }
 
+// Function to convert a string into a regular expression.
 pub fn string_to_rexp(s: &str) -> Re {
     char_list_to_rexp(s.chars().collect::<Vec<char>>().as_slice())
 }
