@@ -1,5 +1,7 @@
 use chrono::{ prelude::*, Duration };
 use std::fmt::{ self };
+
+// Represents parsed expressions
 #[derive(Clone, PartialEq)]
 pub enum Expression {
     TimeExp(Duration),
@@ -35,6 +37,7 @@ pub enum Expression {
     Empty,
 }
 
+//  Pretty prints an expression to cli, useful for testing that parsing is correct
 impl fmt::Debug for Expression {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self {
