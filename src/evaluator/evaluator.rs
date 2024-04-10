@@ -4,6 +4,7 @@ use chrono::{ prelude::*, Duration };
 
 use crate::expressions::expressions::Expression;
 
+//  Represents the kind of values that can be returned
 #[derive(Debug, Clone, PartialEq)]
 pub enum ReturnType {
     Date(DateTime<Utc>),
@@ -12,6 +13,7 @@ pub enum ReturnType {
     Boolean(bool),
 }
 
+//  Pretty prints returned values to cli
 impl fmt::Display for ReturnType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -44,11 +46,15 @@ impl fmt::Display for ReturnType {
     }
 }
 
+// Wrapper function, just takes the list of expressions
 pub fn evaluate(prog: Vec<Expression>) -> Result<ReturnType, ErrorKind> {
     let result = eval_prog(prog, &HashMap::new(), &HashMap::new())?;
     Ok(result)
 }
 
+// Evaluates programmes by iterating through a list of expressions,
+// Evaluate assignments with eval_stmt
+// Evaluate values with eval_exp, then return that value
 fn eval_prog(
     prog: Vec<Expression>,
     env: &HashMap<String, ReturnType>,
@@ -232,6 +238,7 @@ impl ops::Div for ReturnType {
     }
 }
 
+// Means that we can do less than or more then comparisons on certain types
 impl PartialOrd for ReturnType {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         match (&self, &other) {
