@@ -8,6 +8,7 @@ use crate::{
     tokens::tokens::Token::*,
 };
 
+//  Matches one digit from 0 to 9
 fn digit_reg() -> Re {
     char('0') |
         char('1') |
@@ -21,6 +22,7 @@ fn digit_reg() -> Re {
         char('9')
 }
 
+// Matches any upper or lower case letter
 fn letter_reg() -> Re {
     char('a') |
         char('A') |
@@ -76,28 +78,35 @@ fn letter_reg() -> Re {
         char('Z')
 }
 
+// matches numbers with at least one digit
 fn number_reg() -> Re {
     digit_reg() + star(digit_reg())
 }
 
+// Matches comments, comments are enclose with /* ... */
 fn comment_reg() -> Re {
     string_to_rexp("/*") +
         star(letter_reg() | number_reg() | whitespace_reg() | operator_reg()) +
         string_to_rexp("*/")
 }
 
+// Matches variable names
+// Variable names have at least one letter, followed by any number of digits
 fn variable_reg() -> Re {
     letter_reg() + star(letter_reg()) + star(digit_reg())
 }
 
+// Matches whitespace, this will be filtered out by the tokenise function
 pub fn whitespace_reg() -> Re {
     star(char('\n') | char(' ') | char('\r') | char('\t'))
 }
 
+// Matches hour duration
 pub fn hour_reg() -> Re {
     char('h') | char('H') | string_to_rexp("hour") | string_to_rexp("Hour")
 }
 
+// Matches minute duration
 pub fn minute_reg() -> Re {
     char('m') |
         char('M') |
@@ -107,6 +116,7 @@ pub fn minute_reg() -> Re {
         string_to_rexp("minute")
 }
 
+// Matches second duration
 pub fn second_reg() -> Re {
     char('s') |
         char('S') |
@@ -116,21 +126,27 @@ pub fn second_reg() -> Re {
         string_to_rexp("Second")
 }
 
+// Matches day duration
 pub fn day_reg() -> Re {
     char('d') | char('D') | string_to_rexp("day") | string_to_rexp("Day")
 }
 
+// Matches week duration
 pub fn week_reg() -> Re {
     char('w') | char('W') | string_to_rexp("week") | string_to_rexp("Week")
 }
 
+// Matches month duration
 pub fn month_time_reg() -> Re {
     string_to_rexp("month") | string_to_rexp("Month")
 }
 
+// Matches year duration
 pub fn year_time_reg() -> Re {
     char('y') | char('Y') | string_to_rexp("year") | string_to_rexp("Year")
 }
+
+// Matches operators
 pub fn operator_reg() -> Re {
     char('=') |
         char('+') |
@@ -148,9 +164,12 @@ pub fn operator_reg() -> Re {
         string_to_rexp(">=")
 }
 
+// Matches semicolon, which means the end of the expression
 pub fn semi_reg() -> Re {
     char(';')
 }
+
+//  Matches dates: dates must be specified with dd//mm//yyyy notation
 pub fn date_reg() -> Re {
     number_reg() +
         opt(whitespace_reg()) +
@@ -163,13 +182,17 @@ pub fn date_reg() -> Re {
         number_reg()
 }
 
+// Matches left parentheses
 pub fn l_paren_reg() -> Re {
     char('(') | char('{')
 }
 
+// Matches right parentheses
 pub fn r_paren_reg() -> Re {
     char(')') | char('}')
 }
+
+//  Matches valid programmes
 pub fn prog_reg() -> Re {
     star(
         recd("h", hour_reg()) |
@@ -191,6 +214,8 @@ pub fn prog_reg() -> Re {
     )
 }
 
+//  Maps record regular expressions to corresponding tokens
+//  Whitespaces maps to none
 pub fn map_to_tokens(s: &(String, String)) -> Option<Token> {
     let (s1, s2) = s;
     match (s1.as_str(), s2) {
@@ -212,6 +237,10 @@ pub fn map_to_tokens(s: &(String, String)) -> Option<Token> {
     }
 }
 
+// Wrapper function
+// Takes a programme in string format
+// Returns a vector of tokens if valid
+// Raises an error if invalid
 pub fn tokenise(s: &str) -> Result<Vec<Token>, ErrorKind> {
     Ok(
         lexing_simp(&prog_reg(), &s)?

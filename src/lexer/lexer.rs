@@ -60,6 +60,8 @@ pub fn env(v: Val) -> Vec<(String, String)> {
         }
     }
 }
+
+// Returns a Value that represents how a regular expression matches the empty string
 fn mkeps(r: &Re) -> Result<Val, ErrorKind> {
     match r {
         ZERO => Err(ErrorKind::InvalidInput),
@@ -75,6 +77,7 @@ fn mkeps(r: &Re) -> Result<Val, ErrorKind> {
     }
 }
 
+// Injects a character into a Value, depending on how that value was reached
 pub fn inj(r: &Re, c: char, v: Val) -> Result<Val, ErrorKind> {
     match (r, v) {
         (CHAR(_), Empty) => Ok(Chr(c)),
