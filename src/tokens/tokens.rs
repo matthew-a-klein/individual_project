@@ -1,3 +1,4 @@
+/// Enum representing various types of tokens in the language.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     Number(i32),
@@ -10,6 +11,7 @@ pub enum Token {
     Semi,
 }
 
+/// Enum representing different units of time for the `TimeLength` token.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Time {
     Second,
