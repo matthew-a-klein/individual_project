@@ -21,7 +21,13 @@ fn eval_prog(
     match &prog[0] {
         Expression::AssignExp { .. } => {
             let (new_vars, new_funs) = eval_stmt(&prog[0], env, funs)?;
-            eval_prog(prog[1..].to_vec(), &new_vars, &new_funs)
+            if prog.len() > 1 {
+                // If there are m ore expressions, then evaluate them with a new memory state
+                eval_prog(prog[1..].to_vec(), &new_vars, &new_funs)
+            } else {
+                // A programme needs to return a value and should not end with an assignment
+                Err(ErrorKind::InvalidInput)
+            }
         }
         _ => eval_exp(&prog[0], env, funs),
     }
