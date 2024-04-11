@@ -21,10 +21,7 @@ impl fmt::Display for ReturnType {
             ReturnType::Time(duration) => {
                 let days = duration.num_days();
                 let (years, remaining_days) = (days / 365, days % 365);
-                let (hours, remaining_hours) = (
-                    duration.num_hours() % 24,
-                    duration.num_minutes() % 60,
-                );
+                let (hours, _) = (duration.num_hours() % 24, duration.num_minutes() % 60);
                 let (minutes, seconds) = (duration.num_minutes() % 60, duration.num_seconds() % 60);
                 if years > 0 {
                     write!(
