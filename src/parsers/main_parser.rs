@@ -9,7 +9,7 @@ use crate::{
         assignment_parser::parse_assignment,
         conditional_parser::parse_conditional,
         date_parser::parse_date,
-        group_parser::parse_group,
+        group_parser::parse_call,
         number_parser::parse_number,
         postfix_parser::parse_postfix,
         prefix_parser::parse_prefix_op,
@@ -52,7 +52,7 @@ pub fn parse_infix(
             Token::Operator(s) if s == "?" => Ok(parse_conditional(left, tokens, prec_limit)?),
             Token::Operator(s) if s == ":" => Ok((left, tokens)),
             Token::Operator(_) => Ok(parse_binop(left, tokens, prec_limit)?),
-            Token::LParen(_) => Ok(parse_group(left, tokens, prec_limit)?),
+            Token::LParen(_) => Ok(parse_call(left, tokens, prec_limit)?),
             Token::RParen(_) => Ok((left, tokens)),
             _ => Err(ErrorKind::InvalidInput),
         }

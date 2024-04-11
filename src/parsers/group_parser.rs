@@ -4,8 +4,8 @@ use crate::{ expressions::expressions::Expression::{ self }, tokens::tokens::Tok
 
 use super::main_parser::{ parse_infix, parse_prefix };
 
-// Parses a grouped expression, typically a function call.
-pub fn parse_group(
+// Parses a function call
+pub fn parse_call(
     left: Expression,
     tokens: Vec<Token>,
     prec_limit: i32
