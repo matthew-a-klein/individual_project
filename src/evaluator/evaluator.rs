@@ -4,45 +4,6 @@ use chrono::{ prelude::*, Duration };
 
 use crate::expressions::expressions::Expression;
 
-//  Represents the kind of values that can be returned
-#[derive(Debug, Clone, PartialEq)]
-pub enum ReturnType {
-    Date(DateTime<Utc>),
-    Time(Duration),
-    Number(i32),
-    Boolean(bool),
-}
-
-//  Pretty prints returned values to cli
-impl fmt::Display for ReturnType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ReturnType::Date(date_time) => write!(f, "{}", date_time.format("%d/%m/%Y %H:%M:%S")),
-            ReturnType::Time(duration) => {
-                let days = duration.num_days();
-                let (years, remaining_days) = (days / 365, days % 365);
-                let (hours, _) = (duration.num_hours() % 24, duration.num_minutes() % 60);
-                let (minutes, seconds) = (duration.num_minutes() % 60, duration.num_seconds() % 60);
-                if years > 0 {
-                    write!(
-                        f,
-                        "{} years, {} days, {:02}:{:02}:{:02}",
-                        years,
-                        remaining_days,
-                        hours,
-                        minutes,
-                        seconds
-                    )
-                } else {
-                    write!(f, "{} days, {:02}:{:02}:{:02}", remaining_days, hours, minutes, seconds)
-                }
-            }
-            ReturnType::Number(num) => write!(f, "{}", num),
-            ReturnType::Boolean(boolean) => write!(f, "{}", boolean),
-        }
-    }
-}
-
 // Wrapper function, just takes the list of expressions
 pub fn evaluate(prog: Vec<Expression>) -> Result<ReturnType, ErrorKind> {
     let result = eval_prog(prog, &HashMap::new(), &HashMap::new())?;
@@ -171,6 +132,45 @@ fn eval_exp(
             }
         }
         _ => unimplemented!(),
+    }
+}
+
+//  Represents the kind of values that can be returned
+#[derive(Debug, Clone, PartialEq)]
+pub enum ReturnType {
+    Date(DateTime<Utc>),
+    Time(Duration),
+    Number(i32),
+    Boolean(bool),
+}
+
+//  Pretty prints returned values to cli
+impl fmt::Display for ReturnType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ReturnType::Date(date_time) => write!(f, "{}", date_time.format("%d/%m/%Y %H:%M:%S")),
+            ReturnType::Time(duration) => {
+                let days = duration.num_days();
+                let (years, remaining_days) = (days / 365, days % 365);
+                let (hours, _) = (duration.num_hours() % 24, duration.num_minutes() % 60);
+                let (minutes, seconds) = (duration.num_minutes() % 60, duration.num_seconds() % 60);
+                if years > 0 {
+                    write!(
+                        f,
+                        "{} years, {} days, {:02}:{:02}:{:02}",
+                        years,
+                        remaining_days,
+                        hours,
+                        minutes,
+                        seconds
+                    )
+                } else {
+                    write!(f, "{} days, {:02}:{:02}:{:02}", remaining_days, hours, minutes, seconds)
+                }
+            }
+            ReturnType::Number(num) => write!(f, "{}", num),
+            ReturnType::Boolean(boolean) => write!(f, "{}", boolean),
+        }
     }
 }
 
