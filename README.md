@@ -10,17 +10,9 @@ This program is a simple calculator that utilizes Pratt parsing to evaluate math
 - Proper precedence and associativity handling.
 - Error handling for invalid expressions.
 
-## Installation
-
-1. Clone this repository to your local machine:
-
-```
-git clone https://github.com/matthew-a-klein/individual_project.git
-```
-
-2. Ensure you have Rust installed. You can install Rust from [here](https://www.rust-lang.org/tools/install).
-
 ## Usage
+
+Ensure you have Rust installed. You can install Rust from [here](https://www.rust-lang.org/tools/install).
 
 Run the program by executing the `main.rs` file with Rust. Provide the file name containing the programme as a command-line argument. For example, from the project root:
 
@@ -29,6 +21,8 @@ cargo run src/example_progs/add_day.pratt
 ```
 
 This will output the date `2023-06-06 00:00:00 UTC`.
+
+Other example programmes can be found in the same folder.
 
 ## Supported Operators
 
@@ -43,11 +37,20 @@ This will output the date `2023-06-06 00:00:00 UTC`.
 
 - Addition of durations to dates, creating a new date
 - Subtracting one date from another, to create a duration
+- Dates are declared with the syntax dd//mm//yyyy
 
 ### For Durations
 
 - Multiplication of durations by an integer, to create a new duration
 - Addition and subtraction of one duration to another, creating a new duration
+- Durations are declared by using the duration keywords
+- Keywords for second are 's', 'S', 'sec', 'Sec', 'second' and 'Second'
+- Keywords for minute are 'm', 'M', 'min', 'Min', 'minute' and 'Minute'
+- Keywords for hour are 'h', 'H', 'hour' and 'Hour'
+- Keywords for day are 'd', 'D', 'day' and 'Day'
+- Keywords for week are 'w', 'W', 'week' and 'Week'
+- Keywords for month are 'month' and 'Month'
+- Keywords for year are 'y', 'Y', 'year' and 'Year'
 
 ## Supported programming constructs
 
@@ -82,3 +85,11 @@ Ternary operations specify a boolean value, followed by a '?' operator, followed
 #### Example
 
 3 == 1 + 2 ? 11//12//2023 : 12//11/2023
+
+### Comments
+
+Comments can be declared by /\* \*/ delimiters.
+
+#### Example
+
+/_ This is a comment. _/
