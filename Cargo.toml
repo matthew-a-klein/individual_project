@@ -1,5 +1,5 @@
 [package]
-name = "individual_project"
+name = "pratt_date_parser"
 version = "0.1.0"
 edition = "2021"
 
